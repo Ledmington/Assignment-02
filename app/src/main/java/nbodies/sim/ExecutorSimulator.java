@@ -12,9 +12,13 @@ public class ExecutorSimulator extends AbstractSimulator {
 
 	private final ExecutorService executor;
 
-	public ExecutorSimulator(final SimulationData data) {
+	public ExecutorSimulator(final SimulationData data, final int nThreads) {
 		super(data);
-		executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		executor = Executors.newFixedThreadPool(nThreads);
+	}
+
+	public ExecutorSimulator(final SimulationData data) {
+		this(data, Runtime.getRuntime().availableProcessors());
 	}
 
 	public void execute() {

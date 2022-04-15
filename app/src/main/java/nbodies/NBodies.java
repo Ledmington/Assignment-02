@@ -12,7 +12,7 @@ import static nbodies.sim.data.SimulationDataBuilder.randomBodyIn;
 
 public class NBodies {
 
-	private static final boolean USE_GUI = false;
+	private static final boolean USE_GUI = true;
 	private static Simulator sim;
 
 	public static void main(String[] args) {
@@ -27,11 +27,11 @@ public class NBodies {
 		//data = SimulationDataFactory.testBodySet4_many_bodies();
 		data = SimulationData.builder()
 				//.threads(1) // uncomment to use serial
-				.numBodies(1000)
+				.numBodies(10)
 				.bodies(randomBodyIn(-1, 1, -1, 1))
 				.bounds(new Boundary(-6, -6, 6, 6))
 				.deltaTime(0.01)
-				.steps(100_000)
+				.steps(1_000)
 				.build();
 		//data = SimulationDataFactory.circle(100);
 

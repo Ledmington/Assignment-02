@@ -1,6 +1,6 @@
 package nbodies;
 
-import nbodies.sim.MultiThreadSimulator;
+import nbodies.sim.ExecutorSimulator;
 import nbodies.sim.Simulator;
 import nbodies.sim.data.SimulationData;
 
@@ -27,7 +27,7 @@ public class TestTime {
 				.steps(nsteps)
 				.build();
 
-		Simulator sim = new MultiThreadSimulator(data);
+		Simulator sim = new ExecutorSimulator(data);
 
 		sim.execute();
 	}
