@@ -1,5 +1,5 @@
 ﻿# N-Bodies simulation in java
-First assignment of the "Concurrent and Distributed Programming" course.
+Second assignment of the "Concurrent and Distributed Programming" course.
 Link to the actual assignment [here](https://docs.google.com/document/d/1u0YI-9BbNr3gvVvLpMMYGHXAVRbPvz3RVrjej-He9zw/edit).
 
 # How to run JPF
