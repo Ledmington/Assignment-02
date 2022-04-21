@@ -25,20 +25,19 @@ public class ExecutorSimulator extends AbstractSimulator {
 		final Map<Body, Future<V2d>> waitingTasks = new HashMap<>();
 		final Map<Body, V2d> totalForces = new HashMap<>();
 
-		while (!data.isFinished()) {
-			for (Body b : getBodies()) {
-				Future<V2d> task = executor.submit(() -> computeTotalForceOnBody(b));
-				waitingTasks.put(b, task);
-			}
-
-			// explicit global synchronization (and gathering results)
+		Runnable endIterationBarrier = () -> {
+			// explicit global synchronization at the end of every iteration
 			waitingTasks.forEach((key, value) -> {
 				try {
-					totalForces.put(key, value.get());
+					value.get();
 				} catch (InterruptedException | ExecutionException ignored) {
 				}
 			});
 
+			data.nextIteration();
+		};
+
+		Runnable updateParameters = () -> {
 			totalForces.forEach((b, v) -> {
 				Future<V2d> task = executor.submit(() -> {
 					V2d acc = new V2d(v).scalarMul(1.0 / b.getMass());
@@ -49,30 +48,55 @@ public class ExecutorSimulator extends AbstractSimulator {
 				});
 				waitingTasks.put(b, task);
 			});
+			totalForces.clear();
+			executor.execute(endIterationBarrier);
+		};
 
-			// explicit global synchronization at the end of every iteration
+		Runnable endComputeBarrier = () -> {
 			waitingTasks.forEach((key, value) -> {
 				try {
-					value.get();
-				} catch (InterruptedException | ExecutionException ignored) {
-				}
+					totalForces.put(key, value.get());
+				} catch (InterruptedException | ExecutionException ignored) {}
 			});
+			waitingTasks.clear();
+			executor.execute(updateParameters);
+		};
 
-			data.nextIteration();
+		Runnable addForcesToCompute = () -> {
+			for (Body b : getBodies()) {
+				Future<V2d> task = executor.submit(() -> computeTotalForceOnBody(b));
+				waitingTasks.put(b, task);
+			}
+			executor.execute(endComputeBarrier);
+		};
+
+		while (!data.isFinished()) {
+			executor.execute(addForcesToCompute);
+			executor.shutdown();
+			try {
+				executor.awaitTermination(1000_000_000, TimeUnit.SECONDS);
+			} catch (InterruptedException ignored) {}
+		}
+
+		running = true;
+	}
+
+	public void start() {
+		if (!running) {
+			running = true;
 		}
 	}
 
-	public void start() {}
-
 	public void stop() {
+		if (!running) return;
 		executor.shutdown();
 		try {
 			boolean b = executor.awaitTermination(1000_000_000, TimeUnit.SECONDS);
-		} catch (InterruptedException ignored) {
-		}
+		} catch (InterruptedException ignored) {}
+		running = false;
 	}
 
 	public boolean isRunning() {
-		return !executor.isTerminated();
+		return running;
 	}
 }
