@@ -12,7 +12,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public abstract class AbstractSimulator implements Simulator {
 
 	protected final SimulationData data;
-	protected boolean running = false;
 	protected final Lock mutex = new ReentrantLock();
 
 	protected AbstractSimulator(final SimulationData data) {

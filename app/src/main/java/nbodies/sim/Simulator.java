@@ -9,17 +9,5 @@ public interface Simulator {
 	 */
 	void execute();
 
-	/**
-	 * This method restarts the simulator if paused/stopped
-	 */
-	void start();
-
-	/**
-	 * This method stops the simulator
-	 */
-	void stop();
-
-	boolean isRunning();
-
 	SimulationData getData();
 }

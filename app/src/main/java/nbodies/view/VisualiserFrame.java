@@ -24,8 +24,6 @@ public class VisualiserFrame extends JFrame {
 		panel = new VisualiserPanel(w, h, listener);
 		getContentPane().add(panel, BorderLayout.CENTER);
 
-		getContentPane().add(new ControlBar(), BorderLayout.NORTH);
-
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
 		this.pack();
