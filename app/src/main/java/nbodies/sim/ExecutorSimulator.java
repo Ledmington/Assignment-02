@@ -18,7 +18,7 @@ public class ExecutorSimulator extends AbstractSimulator {
 	}
 
 	public ExecutorSimulator(final SimulationData data) {
-		this(data, Runtime.getRuntime().availableProcessors());
+		this(data, data.getNThreads());
 	}
 
 	public void execute() {
