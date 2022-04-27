@@ -31,7 +31,8 @@ public class NBodies {
 				.bodies(randomBodyIn(-1, 1, -1, 1))
 				.bounds(new Boundary(-6, -6, 6, 6))
 				.deltaTime(0.01)
-				.steps(1_000)
+				.steps(10_000)
+				.paused(USE_GUI)
 				.build();
 		//data = SimulationDataFactory.circle(100);
 
@@ -46,10 +47,9 @@ public class NBodies {
 			int width = (int) screenSize.getWidth();
 			int height = (int) screenSize.getHeight();
 			int size = min(width, height) - 100;
-			new SimulationView(size, size, data);
-		} else {
-			sim.execute();
+			new SimulationView(size, size);
 		}
+		sim.execute();
 
 		// Printing total time
 		while (!data.isFinished()) {

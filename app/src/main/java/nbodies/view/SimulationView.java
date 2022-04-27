@@ -15,12 +15,16 @@ public class SimulationView {
 	/**
 	 * Creates a view of the specified size (in pixels)
 	 */
-	public SimulationView(final int w, final int h, final SimulationData data) {
+	public SimulationView(final int w, final int h) {
 		frame = new VisualiserFrame(w, h);
 
 		Thread displayerThread = new Thread(() -> {
 			while (true) {
-				display(NBodies.getSimulator().getData());
+				SimulationData data = NBodies.getSimulator().getData();
+				display(data);
+				/*if(data.isPaused()){
+					data.getPause().hitAndWaitAll();
+				}*/
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException ignored) {

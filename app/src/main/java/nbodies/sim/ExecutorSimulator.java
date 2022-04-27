@@ -26,6 +26,11 @@ public class ExecutorSimulator extends AbstractSimulator {
 		final Map<Body, V2d> totalForces = new HashMap<>();
 
 		while (!data.isFinished()) {
+			// Pause if paused is set.
+			if(data.isPaused()){
+				data.getPause().hitAndWaitAll();
+			}
+
 			// computing forces
 			for (Body b : getBodies()) {
 				Future<V2d> task = executor.submit(() -> computeTotalForceOnBody(b));

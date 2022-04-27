@@ -13,6 +13,7 @@ public class SimulationDataBuilder {
 	private double dt = 0.001;
 	private long steps = 50000;
 	private int nth = Runtime.getRuntime().availableProcessors();
+	private boolean paused = false;
 
 	public static Supplier<Body> randomBodyIn(final double xmin, final double xmax, final double ymin, final double ymax) {
 		// added this ugliness to please JPF
@@ -55,6 +56,11 @@ public class SimulationDataBuilder {
 		return this;
 	}
 
+	public SimulationDataBuilder paused(final boolean paused){
+		this.paused = paused;
+		return this;
+	}
+
 	public SimulationDataBuilder threads(final int n) {
 		if (n < 1) {
 			throw new IllegalArgumentException("Number of threads can't be negative or zero.");
@@ -76,6 +82,6 @@ public class SimulationDataBuilder {
 			bodies.add(bodySupplier.get());
 		}
 
-		return new SimulationData(bodies, bounds, dt, steps, nth);
+		return new SimulationData(bodies, bounds, dt, steps, nth, paused);
 	}
 }

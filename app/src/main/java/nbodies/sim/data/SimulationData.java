@@ -9,6 +9,7 @@ import nbodies.utils.stats.Statistics;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class SimulationData {
@@ -21,16 +22,18 @@ public class SimulationData {
 	private final Statistics FPSstats;
 	private double vt = 0;
 	private final Timer timer;
+	private static boolean paused;
 
-	public SimulationData(final ArrayList<Body> bodies, final Boundary bounds, final double dt, final long nsteps, final int nThreads) {
+	public SimulationData(final ArrayList<Body> bodies, final Boundary bounds, final double dt, final long nsteps, final int nThreads, final boolean p) {
 		this.nThreads = nThreads;
 		this.bodies = bodies;
 		this.bounds = bounds;
 		this.dt = dt;
 		this.iteration = new Iteration(nsteps);
 		this.FPSstats = new Statistics();
-		pause = new ReusableBarrier(nThreads + 1);
+		this.pause = new ReusableBarrier(2); // ExecutorSimulator - VisualiserFrame
 		this.timer = new Timer();
+		paused = p;
 	}
 
 	public SimulationData(final SimulationData data) {
@@ -46,7 +49,7 @@ public class SimulationData {
 	}
 
 	public SimulationData(final ArrayList<Body> bodies, final Boundary bounds) {
-		this(bodies, bounds, 0.001, 50000, Runtime.getRuntime().availableProcessors());
+		this(bodies, bounds, 0.001, 50000, Runtime.getRuntime().availableProcessors(), false);
 	}
 
 	public static SimulationDataBuilder builder() {
@@ -96,6 +99,14 @@ public class SimulationData {
 
 	public Barrier getPause() {
 		return pause;
+	}
+
+	public boolean isPaused() {
+		return paused;
+	}
+
+	public static void setPaused(boolean p){
+		paused = p;
 	}
 
 	public boolean isFinished() {

@@ -1,13 +1,19 @@
 package nbodies.view;
 
+import nbodies.NBodies;
 import nbodies.sim.data.SimulationData;
+import org.checkerframework.checker.units.qual.A;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VisualiserFrame extends JFrame {
 
 	private final VisualiserPanel panel;
+	private final JButton startButton;
+	private final JButton stopButton;
+
 
 	public VisualiserFrame(int w, int h) {
 		setTitle("N-Bodies Simulation");
@@ -21,6 +27,33 @@ public class VisualiserFrame extends JFrame {
 
 		setLayout(new BorderLayout());
 
+		startButton = new JButton("START");
+		stopButton = new JButton("STOP");
+
+		if(NBodies.getSimulator().getData().isPaused()){
+			stopButton.setEnabled(false);
+		} else {
+			startButton.setEnabled(false);
+		}
+
+		startButton.setBounds(380, 10, 100, 20);
+		stopButton.setBounds(500, 10, 100, 20);
+
+		startButton.addActionListener((but)->{
+			startButton.setEnabled(false);
+			stopButton.setEnabled(true);
+			SimulationData.setPaused(false);
+			NBodies.getSimulator().getData().getPause().hitAndWaitAll();
+		});
+		stopButton.addActionListener((but)-> {
+			startButton.setEnabled(true);
+			stopButton.setEnabled(false);
+			SimulationData.setPaused(true);
+		});
+
+		getContentPane().add(startButton);
+		getContentPane().add(stopButton);
+
 		panel = new VisualiserPanel(w, h, listener);
 		getContentPane().add(panel, BorderLayout.CENTER);
 
@@ -32,6 +65,10 @@ public class VisualiserFrame extends JFrame {
 	public void display(final SimulationData data) {
 		try {
 			SwingUtilities.invokeAndWait(() -> {
+				if(data.isFinished()){
+					startButton.setEnabled(false);
+					stopButton.setEnabled(false);
+				}
 				panel.display(data);
 				repaint();
 			});
