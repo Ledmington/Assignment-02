@@ -21,18 +21,24 @@ public class MovingArrowsListener implements KeyListener {
 			// zoom
 			case KeyEvent.VK_PLUS:
 				scale *= 1.1;
+				break;
 			case KeyEvent.VK_MINUS:
 				scale *= 0.9;
+				break;
 
 			// move
 			case KeyEvent.VK_UP:
 				y -= MOVEMENT_SPEED;
+				break;
 			case KeyEvent.VK_DOWN:
 				y += MOVEMENT_SPEED;
+				break;
 			case KeyEvent.VK_LEFT:
 				x -= MOVEMENT_SPEED;
+				break;
 			case KeyEvent.VK_RIGHT:
 				x += MOVEMENT_SPEED;
+				break;
 		}
 	}
 
