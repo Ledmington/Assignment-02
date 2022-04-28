@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class TestApi {
+public class TestProjectAnalyzer {
 
 	@Test
 	public void testNullPath() {
