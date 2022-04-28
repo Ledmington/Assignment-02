@@ -1,6 +1,6 @@
-package parser.analyzer.report;
+package parser.report;
 
-import parser.analyzer.info.MethodInfo;
+import parser.info.MethodInfo;
 
 import java.util.List;
 

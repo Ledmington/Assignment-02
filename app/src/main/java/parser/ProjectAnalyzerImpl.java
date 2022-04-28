@@ -1,13 +1,13 @@
-package parser.analyzer;
+package parser;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
-import parser.analyzer.info.ProjectElem;
-import parser.analyzer.report.ClassReport;
-import parser.analyzer.report.InterfaceReport;
-import parser.analyzer.report.PackageReport;
-import parser.analyzer.report.ProjectReport;
+import io.vertx.core.buffer.Buffer;
+import parser.info.ProjectElem;
+import parser.report.ClassReport;
+import parser.report.InterfaceReport;
+import parser.report.PackageReport;
+import parser.report.ProjectReport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,9 +15,12 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
+
+	private final Vertx vertx;
+
 	public ProjectAnalyzerImpl() {
-		Vertx vertx = Vertx.vertx(
-				new VertxOptions().setWorkerPoolSize(Runtime.getRuntime().availableProcessors())
+		vertx = Vertx.vertx(
+				//new VertxOptions().setWorkerPoolSize(Runtime.getRuntime().availableProcessors())
 		);
 	}
 
@@ -48,5 +51,8 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		if (!new File(srcProjectFolderName).exists()) {
 			throw new FileNotFoundException(srcProjectFolderName + " does not exist");
 		}
+
+		Future<Buffer> fut = vertx.fileSystem().readFile(srcProjectFolderName);
+		fut.onComplete(res -> System.out.println(res.result().toString()));
 	}
 }

@@ -1,11 +1,11 @@
-package parser.analyzer;
+package parser;
 
 import io.vertx.core.*;
-import parser.analyzer.info.ProjectElem;
-import parser.analyzer.report.ClassReport;
-import parser.analyzer.report.InterfaceReport;
-import parser.analyzer.report.PackageReport;
-import parser.analyzer.report.ProjectReport;
+import parser.info.ProjectElem;
+import parser.report.ClassReport;
+import parser.report.InterfaceReport;
+import parser.report.PackageReport;
+import parser.report.ProjectReport;
 
 import java.io.FileNotFoundException;
 import java.util.function.*;

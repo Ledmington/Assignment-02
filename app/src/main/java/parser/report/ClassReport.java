@@ -1,11 +1,11 @@
-package parser.analyzer.report;
+package parser.report;
 
-import parser.analyzer.info.FieldInfo;
-import parser.analyzer.info.MethodInfo;
+import parser.info.FieldInfo;
+import parser.info.MethodInfo;
 
 import java.util.List;
 
-public interface PackageReport {
+public interface ClassReport {
 
 	String getFullClassName();
 	

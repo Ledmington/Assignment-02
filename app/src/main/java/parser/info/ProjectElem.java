@@ -1,4 +1,4 @@
-package parser.analyzer.info;
+package parser.info;
 
 public interface ProjectElem {
 }

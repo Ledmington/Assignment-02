@@ -1,6 +1,6 @@
-package parser.analyzer.info;
+package parser.info;
 
-import parser.analyzer.report.ClassReport;
+import parser.report.ClassReport;
 
 public interface FieldInfo {
     String getName();

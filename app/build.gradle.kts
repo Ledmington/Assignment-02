@@ -26,7 +26,8 @@ dependencies {
 }
 
 application {
-    mainClass.set("nbodies.NBodies")
+    //mainClass.set("nbodies.NBodies")
+    mainClass.set("parser.JavaParser")
 }
 
 tasks.test {

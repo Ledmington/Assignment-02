@@ -1,4 +1,4 @@
-package parser.analyzer.report;
+package parser.report;
 
 import java.util.List;
 
