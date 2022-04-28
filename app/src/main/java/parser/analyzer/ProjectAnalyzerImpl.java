@@ -1,6 +1,8 @@
 package parser.analyzer;
 
 import io.vertx.core.Future;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import parser.analyzer.info.ProjectElem;
 import parser.analyzer.report.ClassReport;
 import parser.analyzer.report.InterfaceReport;
@@ -9,11 +11,16 @@ import parser.analyzer.report.ProjectReport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.file.Path;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
+	public ProjectAnalyzerImpl() {
+		Vertx vertx = Vertx.vertx(
+				new VertxOptions().setWorkerPoolSize(Runtime.getRuntime().availableProcessors())
+		);
+	}
+
 	@Override
 	public Future<InterfaceReport> getInterfaceReport(String srcInterfacePath) {
 		return null;
