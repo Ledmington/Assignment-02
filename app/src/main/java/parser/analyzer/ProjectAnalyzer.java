@@ -7,6 +7,7 @@ import parser.analyzer.report.InterfaceReport;
 import parser.analyzer.report.PackageReport;
 import parser.analyzer.report.ProjectReport;
 
+import java.io.FileNotFoundException;
 import java.util.function.*;
 
 public interface ProjectAnalyzer {
@@ -50,5 +51,5 @@ public interface ProjectAnalyzer {
 	 * @param srcProjectFolderName Full path of project folder
 	 * @param callback Action to be performed on every project element
 	 */
-	void analyzeProject(String srcProjectFolderName, Consumer<ProjectElem> callback);
+	void analyzeProject(String srcProjectFolderName, Consumer<ProjectElem> callback) throws FileNotFoundException;
 }
