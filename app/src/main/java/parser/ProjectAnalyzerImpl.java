@@ -1,5 +1,6 @@
 package parser;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -53,6 +54,12 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		}
 
 		Future<Buffer> fut = vertx.fileSystem().readFile(srcProjectFolderName);
-		fut.onComplete(res -> System.out.println(res.result().toString()));
+
+		System.out.println(fut);
+		fut.onComplete((AsyncResult<Buffer> res) -> {
+			System.out.println(res);
+			System.out.println(res.result().toString());
+		});
+		System.out.println(fut);
 	}
 }
