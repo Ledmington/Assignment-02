@@ -1,9 +1,8 @@
 package parser;
 
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
+import io.vertx.core.file.OpenOptions;
 import parser.info.ProjectElem;
 import parser.report.ClassReport;
 import parser.report.InterfaceReport;
@@ -42,7 +41,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 	@Override
 	public Future<ProjectReport> getProjectReport(String srcProjectFolderPath) {
-		return null;
+		return null;//return vertx.fileSystem().open(srcProjectFolderPath, new OpenOptions());
 	}
 
 	@Override
@@ -53,13 +52,8 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 			throw new FileNotFoundException(srcProjectFolderName + " does not exist");
 		}
 
-		Future<Buffer> fut = vertx.fileSystem().readFile(srcProjectFolderName);
+		Future<ProjectReport> fut = getProjectReport(srcProjectFolderName);
 
-		System.out.println(fut);
-		fut.onComplete((AsyncResult<Buffer> res) -> {
-			System.out.println(res);
-			System.out.println(res.result().toString());
-		});
-		System.out.println(fut);
+		fut.onComplete(System.out::println);
 	}
 }
