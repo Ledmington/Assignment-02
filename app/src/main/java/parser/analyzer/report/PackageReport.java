@@ -1,5 +1,8 @@
 package parser.analyzer.report;
 
+import parser.analyzer.info.FieldInfo;
+import parser.analyzer.info.MethodInfo;
+
 import java.util.List;
 
 public interface PackageReport {
