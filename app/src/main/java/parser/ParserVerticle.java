@@ -26,9 +26,7 @@ public class ParserVerticle extends AbstractVerticle {
 		}, false);
 		log("after sending blocking computation");
 
-		res.onComplete(r -> {
-			log("result: " + r.result());
-		});
+		res.onComplete(r -> log("result: " + r.result()));
 	}
 
 	private void log(final String msg) {

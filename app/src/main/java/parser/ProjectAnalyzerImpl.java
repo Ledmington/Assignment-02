@@ -2,7 +2,7 @@ package parser;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.file.OpenOptions;
+import io.vertx.core.VertxOptions;
 import parser.info.ProjectElem;
 import parser.report.ClassReport;
 import parser.report.InterfaceReport;
@@ -17,11 +17,12 @@ import java.util.function.Consumer;
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 	private final Vertx vertx;
+	private final ParserVerticle pv;
 
 	public ProjectAnalyzerImpl() {
-		vertx = Vertx.vertx(
-				//new VertxOptions().setWorkerPoolSize(Runtime.getRuntime().availableProcessors())
-		);
+		vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(Runtime.getRuntime().availableProcessors()));
+		pv = new ParserVerticle(-365);
+		vertx.deployVerticle(pv);
 	}
 
 	@Override
@@ -55,5 +56,10 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		Future<ProjectReport> fut = getProjectReport(srcProjectFolderName);
 
 		fut.onComplete(System.out::println);
+	}
+
+	@Override
+	public ParserVerticle getEventLoop() {
+		return pv;
 	}
 }

@@ -1,9 +1,12 @@
 package parser.view;
 
+import io.vertx.core.Vertx;
 import parser.ProjectAnalyzer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 

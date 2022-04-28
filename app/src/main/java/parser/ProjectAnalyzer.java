@@ -52,4 +52,6 @@ public interface ProjectAnalyzer {
 	 * @param callback Action to be performed on every project element
 	 */
 	void analyzeProject(String srcProjectFolderName, Consumer<ProjectElem> callback) throws FileNotFoundException;
+
+	ParserVerticle getEventLoop();
 }
