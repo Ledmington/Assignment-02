@@ -33,8 +33,8 @@ public class TestTime {
 	}
 
 	public static void main(final String[] args) {
-		final List<Integer> bodies = List.of(100, 1000, 5000); // Must do this ugliness to please JPF
-		final List<Integer> steps = List.of(1000, 10000, 50000); // Must do this ugliness to please JPF
+		final List<Integer> bodies = List.of(5000); // Must do this ugliness to please JPF
+		final List<Integer> steps = List.of(10000, 50000); // Must do this ugliness to please JPF
 		final int attempts = 1;
 
 		for (Integer nb : bodies) {
