@@ -3,6 +3,7 @@ package parser;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.file.OpenOptions;
 import parser.info.ProjectElem;
 import parser.report.ClassReport;
 import parser.report.InterfaceReport;
@@ -42,7 +43,8 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 	@Override
 	public Future<ProjectReport> getProjectReport(String srcProjectFolderPath) {
-		return null;//return vertx.fileSystem().open(srcProjectFolderPath, new OpenOptions());
+		throw new Error("Not implemented");
+		//return vertx.fileSystem().open(srcProjectFolderPath, new OpenOptions().setRead(true));
 	}
 
 	@Override

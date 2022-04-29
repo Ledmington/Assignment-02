@@ -1,12 +1,9 @@
 package parser.view;
 
-import io.vertx.core.Vertx;
 import parser.ProjectAnalyzer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -20,7 +17,7 @@ public class ParserFrame extends JFrame {
 		chooseFolder.addActionListener(e -> {
 			final JFileChooser fc = new JFileChooser();
 			fc.setCurrentDirectory(new File("."));
-			fc.setDialogTitle("patatone");
+			fc.setDialogTitle("Choose Folder to analyze");
 			fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			int returnVal = fc.showOpenDialog(this);
 
