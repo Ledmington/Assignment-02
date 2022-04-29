@@ -25,7 +25,7 @@ public class ParserFrame extends JFrame {
 				File file = fc.getSelectedFile();
 				System.out.println("Opening \"" + file.getAbsolutePath() + "\"");
 				try {
-					pa.analyzeProject(file.getAbsolutePath(), f -> {});
+					pa.analyzeProject(file.getAbsolutePath(), f -> System.out.println("Fake analyzing \""+f+"\""));
 				} catch (FileNotFoundException ignored) {}
 			}
 		});

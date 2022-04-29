@@ -1,8 +1,10 @@
 package parser;
 
+import com.github.javaparser.JavaParser;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.file.OpenOptions;
 import parser.info.ProjectElem;
 import parser.report.classes.ClassReport;
 import parser.report.InterfaceReport;
@@ -11,6 +13,8 @@ import parser.report.project.ProjectReport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -18,6 +22,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 	private final Vertx vertx;
 	private final ParserVerticle pv;
+	private Consumer<ProjectElem> callback;
 
 	public ProjectAnalyzerImpl() {
 		vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(Runtime.getRuntime().availableProcessors()));
@@ -42,8 +47,31 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 	@Override
 	public Future<ProjectReport> getProjectReport(String srcProjectFolderPath) {
-		throw new Error("Not implemented");
-		//return vertx.fileSystem().open(srcProjectFolderPath, new OpenOptions().setRead(true));
+		File project = new File(srcProjectFolderPath);
+		if (project.isFile()) {
+			//return vertx.fileSystem().open(srcProjectFolderPath, new OpenOptions().setRead(true));
+			return vertx.executeBlocking(h -> {
+				System.out.println("Parsing \"" + project + "\"");
+				try {
+					new JavaParser().parse(project);
+				} catch (FileNotFoundException e) {
+					throw new RuntimeException(e);
+				}
+			});
+		}
+		else if (project.isDirectory()) {
+			return vertx.executeBlocking(h -> {
+				System.out.println("Found directory \"" + srcProjectFolderPath + "\"");
+				final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(project.listFiles())).toList();
+				for(File file : innerFiles) {
+					vertx.executeBlocking(handler -> this.getProjectReport(file.getAbsolutePath()));
+				}
+			});
+		}
+		else {
+			// maybe it is a symbolic link
+			throw new Error("Unknown file type");
+		}
 	}
 
 	@Override
@@ -54,6 +82,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 			throw new FileNotFoundException(srcProjectFolderName + " does not exist");
 		}
 
+		this.callback = callback;
 		Future<ProjectReport> fut = getProjectReport(srcProjectFolderName);
 
 		fut.onComplete(System.out::println);

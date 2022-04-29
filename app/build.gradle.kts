@@ -27,7 +27,7 @@ dependencies {
 
 application {
     //mainClass.set("nbodies.NBodies")
-    mainClass.set("parser.JavaParser")
+    mainClass.set("parser.AsyncParser")
 }
 
 tasks.test {
