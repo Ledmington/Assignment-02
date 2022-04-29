@@ -2,8 +2,8 @@ package parser;
 
 import org.junit.jupiter.api.Test;
 import parser.report.classes.ClassReport;
-import parser.report.ProjectReport;
-import parser.report.ProjectReportImpl;
+import parser.report.project.ProjectReport;
+import parser.report.project.ProjectReportImpl;
 
 import java.util.Map;
 

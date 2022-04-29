@@ -1,4 +1,4 @@
-package parser.report;
+package parser.report.project;
 
 import parser.report.classes.ClassReport;
 

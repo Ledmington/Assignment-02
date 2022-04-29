@@ -7,7 +7,7 @@ import parser.info.ProjectElem;
 import parser.report.classes.ClassReport;
 import parser.report.InterfaceReport;
 import parser.report.PackageReport;
-import parser.report.ProjectReport;
+import parser.report.project.ProjectReport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
