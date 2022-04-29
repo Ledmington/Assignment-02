@@ -36,10 +36,15 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 	@Override
 	public Future<InterfaceReport> getInterfaceReport(String srcInterfacePath) {
 		return vertx.executeBlocking(h -> {
-			var interDecl = new JavaParser()
-					.parse(srcInterfacePath)
-					.getResult().get()
-					.findFirst(ClassOrInterfaceDeclaration.class).get();
+			ClassOrInterfaceDeclaration interDecl = null;
+			try {
+				interDecl = new JavaParser()
+						.parse(new File(srcInterfacePath))
+						.getResult().get()
+						.findFirst(ClassOrInterfaceDeclaration.class).get();
+			} catch (FileNotFoundException e) {
+				h.fail("File no found: " + e.getMessage());
+			}
 			var fullInterfaceName = interDecl.getFullyQualifiedName().get();
 			var methodsInfo = interDecl.getMethods().stream().map(
 					method -> (MethodInfo)new MethodInfoImpl(
