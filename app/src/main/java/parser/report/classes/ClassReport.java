@@ -18,5 +18,4 @@ public interface ClassReport {
 	static ClassReportBuilder builder() {
 		return new ClassReportBuilder();
 	}
-	
 }

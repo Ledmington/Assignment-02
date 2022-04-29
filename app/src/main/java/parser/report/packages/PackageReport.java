@@ -1,4 +1,4 @@
-package parser.report;
+package parser.report.packages;
 
 import parser.info.FieldInfo;
 import parser.info.MethodInfo;

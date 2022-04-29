@@ -3,8 +3,8 @@ package parser;
 import io.vertx.core.*;
 import parser.info.ProjectElem;
 import parser.report.classes.ClassReport;
-import parser.report.InterfaceReport;
-import parser.report.PackageReport;
+import parser.report.interfaces.InterfaceReport;
+import parser.report.packages.PackageReport;
 import parser.report.project.ProjectReport;
 
 import java.io.FileNotFoundException;

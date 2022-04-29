@@ -1,18 +1,23 @@
 package parser;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.file.OpenOptions;
+import parser.info.MethodInfo;
+import parser.info.MethodInfoImpl;
 import parser.info.ProjectElem;
 import parser.report.classes.ClassReport;
-import parser.report.InterfaceReport;
-import parser.report.PackageReport;
+import parser.report.classes.ClassReportImpl;
+import parser.report.interfaces.InterfaceReport;
+import parser.report.interfaces.InterfaceReportImpl;
+import parser.report.packages.PackageReport;
 import parser.report.project.ProjectReport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -32,12 +37,32 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 	@Override
 	public Future<InterfaceReport> getInterfaceReport(String srcInterfacePath) {
-		return null;
+		return vertx.executeBlocking(h -> {
+			var interDecl = new JavaParser()
+					.parse(srcInterfacePath)
+					.getResult().get()
+					.findFirst(ClassOrInterfaceDeclaration.class).get();
+			var fullInterfaceName = interDecl.getFullyQualifiedName().get();
+			var methodsInfo = interDecl.getMethods().stream().map(
+					method -> (MethodInfo)new MethodInfoImpl(
+							method.getNameAsString(),
+							method.getName().getBegin().get().line,
+							method.getName().getEnd().get().line
+					)
+			).toList();
+			h.complete(new InterfaceReportImpl(fullInterfaceName, srcInterfacePath, methodsInfo));
+		});
 	}
 
 	@Override
 	public Future<ClassReport> getClassReport(String srcClassPath) {
-		return null;
+		return vertx.executeBlocking(h -> {
+			var classDecl = new JavaParser()
+					.parse(srcClassPath)
+					.getResult().get()
+					.findFirst(ClassOrInterfaceDeclaration.class).get();
+			//h.complete(ClassReport.builder().
+		});
 	}
 
 	@Override
