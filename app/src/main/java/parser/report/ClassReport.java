@@ -14,5 +14,9 @@ public interface ClassReport {
 	List<MethodInfo> getMethodsInfo();
 
 	List<FieldInfo> getFieldsInfo();
+
+	static ClassReportBuilder builder() {
+		return new ClassReportBuilder();
+	}
 	
 }
