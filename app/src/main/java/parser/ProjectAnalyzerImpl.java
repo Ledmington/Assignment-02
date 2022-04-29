@@ -60,10 +60,15 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 	@Override
 	public Future<ClassReport> getClassReport(String srcClassPath) {
 		return vertx.executeBlocking(h -> {
-			var classDecl = new JavaParser()
-					.parse(srcClassPath)
-					.getResult().get()
-					.findFirst(ClassOrInterfaceDeclaration.class).get();
+			ClassOrInterfaceDeclaration classDecl = null;
+			try {
+				classDecl = new JavaParser()
+						.parse(new File(srcClassPath))
+						.getResult().get()
+						.findFirst(ClassOrInterfaceDeclaration.class).get();
+			} catch (FileNotFoundException e) {
+				h.fail("Class not found: " + e.getMessage());
+			}
 			var className = classDecl.getFullyQualifiedName().get();
 			var methodsInfo = classDecl.getMethods().stream().map(
 					method -> (MethodInfo)new MethodInfoImpl(
