@@ -1,6 +1,6 @@
 package parser.info;
 
-import parser.report.ClassReport;
+import parser.report.classes.ClassReport;
 
 public interface MethodInfo {
     String getName();

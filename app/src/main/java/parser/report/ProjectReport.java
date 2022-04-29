@@ -1,5 +1,7 @@
 package parser.report;
 
+import parser.report.classes.ClassReport;
+
 import java.util.List;
 
 public interface ProjectReport {

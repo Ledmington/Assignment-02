@@ -1,8 +1,8 @@
 package parser;
 
 import org.junit.jupiter.api.Test;
-import parser.report.ClassReport;
-import parser.report.ClassReportBuilder;
+import parser.report.classes.ClassReport;
+import parser.report.classes.ClassReportBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;

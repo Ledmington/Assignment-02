@@ -2,7 +2,7 @@ package parser;
 
 import io.vertx.core.*;
 import parser.info.ProjectElem;
-import parser.report.ClassReport;
+import parser.report.classes.ClassReport;
 import parser.report.InterfaceReport;
 import parser.report.PackageReport;
 import parser.report.ProjectReport;
