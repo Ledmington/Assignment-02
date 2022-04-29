@@ -5,9 +5,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import parser.info.MethodInfo;
-import parser.info.MethodInfoImpl;
-import parser.info.ProjectElem;
+import parser.info.*;
 import parser.report.classes.ClassReport;
 import parser.report.classes.ClassReportImpl;
 import parser.report.interfaces.InterfaceReport;
@@ -26,13 +24,13 @@ import java.util.function.Consumer;
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 	private final Vertx vertx;
-	private final ParserVerticle pv;
+	//private final ParserVerticle pv;
 	private Consumer<ProjectElem> callback;
 
 	public ProjectAnalyzerImpl() {
 		vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(Runtime.getRuntime().availableProcessors()));
-		pv = new ParserVerticle(-365);
-		vertx.deployVerticle(pv);
+		//pv = new ParserVerticle(-365);
+		//vertx.deployVerticle(pv);
 	}
 
 	@Override
@@ -61,7 +59,21 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 					.parse(srcClassPath)
 					.getResult().get()
 					.findFirst(ClassOrInterfaceDeclaration.class).get();
-			//h.complete(ClassReport.builder().
+			var className = classDecl.getFullyQualifiedName().get();
+			var methodsInfo = classDecl.getMethods().stream().map(
+					method -> (MethodInfo)new MethodInfoImpl(
+							method.getNameAsString(),
+							method.getName().getBegin().get().line,
+							method.getName().getEnd().get().line
+					)
+			).toList();
+			var fieldsInfo = classDecl.getFields().stream().map(
+					field -> (FieldInfo)new FieldInfoImpl(
+							field.getVariables().get(0).getNameAsString(),
+							field.getVariables().get(0).getTypeAsString()
+					)
+			).toList();
+			h.complete(new ClassReportImpl(className, srcClassPath, methodsInfo, fieldsInfo));
 		});
 	}
 
@@ -111,10 +123,5 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		Future<ProjectReport> fut = getProjectReport(srcProjectFolderName);
 
 		fut.onComplete(System.out::println);
-	}
-
-	@Override
-	public ParserVerticle getEventLoop() {
-		return pv;
 	}
 }
