@@ -1,6 +1,7 @@
 package parser;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import io.vertx.core.Future;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
@@ -90,43 +92,47 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 	@Override
 	public Future<PackageReport> getPackageReport(String srcPackagePath) {
 		return vertx.executeBlocking(h -> {
-			PackageDeclaration packageDecl = null;
-			try {
-				packageDecl = new JavaParser()
-						.parse(new File(srcPackagePath))
-						.getResult().get()
-						.findFirst(PackageDeclaration.class).get();
-			} catch (FileNotFoundException e) {
-				h.fail("Package not found: " + e.getMessage());
-			}
-			System.out.println("ABABAABABABA");
-			var fullPackageName = packageDecl.getNameAsString();
-			System.out.println("ADADADADADAD");
 			List<ClassReport> classReports = new CopyOnWriteArrayList<>();
 			List<InterfaceReport> interfaceReports = new CopyOnWriteArrayList<>();
+			AtomicInteger count = new AtomicInteger(1);
 			final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(new File(srcPackagePath).listFiles())).toList();
+			String fullPackageName = null;
 			for(File file : innerFiles){
 				if(file.isFile()){
 					ClassOrInterfaceDeclaration classInterfaceDecl = null;
 					try{
-						classInterfaceDecl = new JavaParser()
-								.parse(new File(srcPackagePath))
-								.getResult().get()
+						CompilationUnit cu = new JavaParser()
+								.parse(file)
+								.getResult().get();
+						classInterfaceDecl = cu
 								.findFirst(ClassOrInterfaceDeclaration.class).get();
+						fullPackageName = cu.getPackageDeclaration().get().getNameAsString();
+
+						String finalFullPackageName = fullPackageName;
+
+						if(classInterfaceDecl.isInterface()){
+							count.incrementAndGet();
+							getInterfaceReport(file.getPath()).onSuccess(ir ->{
+								interfaceReports.add(ir);
+								if(count.decrementAndGet() == 0){
+									h.complete(new PackageReportImpl(finalFullPackageName, srcPackagePath, classReports, interfaceReports));
+								}
+							});
+						} else if(classInterfaceDecl.isClassOrInterfaceDeclaration()){
+							count.incrementAndGet();
+							getClassReport(file.getPath()).onSuccess(cr ->{
+								classReports.add(cr);
+								if(count.decrementAndGet() == 0){
+									h.complete(new PackageReportImpl(finalFullPackageName, srcPackagePath, classReports, interfaceReports));
+								}
+							});
+						}
 					}catch (Exception ignored){}
-					if(classInterfaceDecl.isInterface()){
-						getInterfaceReport(file.getPath()).onSuccess(interfaceReports::add);
-					} else {
-						getClassReport(file.getPath()).onSuccess(classReports::add);
-					}
-				} else {
-					getPackageReport(file.getPath()).onSuccess(pr -> {
-						classReports.addAll(pr.getClassReports());
-						interfaceReports.addAll(pr.getInterfaceReports());
-					});
 				}
 			}
-			h.complete(new PackageReportImpl(fullPackageName, srcPackagePath, classReports, interfaceReports));
+			if(count.decrementAndGet() == 0){
+				h.complete(new PackageReportImpl(fullPackageName, srcPackagePath, classReports, interfaceReports));
+			}
 		});
 	}
 
