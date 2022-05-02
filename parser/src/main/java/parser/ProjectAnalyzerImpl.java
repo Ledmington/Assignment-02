@@ -99,7 +99,9 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 			} catch (FileNotFoundException e) {
 				h.fail("Package not found: " + e.getMessage());
 			}
+			System.out.println("ABABAABABABA");
 			var fullPackageName = packageDecl.getNameAsString();
+			System.out.println("ADADADADADAD");
 			List<ClassReport> classReports = new CopyOnWriteArrayList<>();
 			List<InterfaceReport> interfaceReports = new CopyOnWriteArrayList<>();
 			final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(new File(srcPackagePath).listFiles())).toList();

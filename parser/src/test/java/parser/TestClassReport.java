@@ -19,7 +19,7 @@ public class TestClassReport {
     }
 
     @Test
-    public void testFullInterfaceName(){
+    public void testClassReport(){
         var ir = pa.getClassReport(path);
         while(!ir.isComplete()){}  // Intended busy waiting. Add a short sleep inside?
         assertEquals("parser.ProjectAnalyzerImpl", ir.result().getFullClassName());
