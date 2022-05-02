@@ -1,12 +1,18 @@
 plugins {
     id("application")
     id("java-library")
+    id("java")
 }
 
 sourceSets {
     test {
         java.srcDir("src/test/java")
     }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
