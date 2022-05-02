@@ -1,6 +1,7 @@
 package parser;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -11,14 +12,13 @@ import parser.report.classes.ClassReportImpl;
 import parser.report.interfaces.InterfaceReport;
 import parser.report.interfaces.InterfaceReportImpl;
 import parser.report.packages.PackageReport;
+import parser.report.packages.PackageReportImpl;
 import parser.report.project.ProjectReport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
@@ -71,14 +71,14 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 			}
 			var className = classDecl.getFullyQualifiedName().get();
 			var methodsInfo = classDecl.getMethods().stream().map(
-					method -> (MethodInfo)new MethodInfoImpl(
+					method -> (MethodInfo) new MethodInfoImpl(
 							method.getNameAsString(),
 							method.getName().getBegin().get().line,
 							method.getName().getEnd().get().line
 					)
 			).toList();
 			var fieldsInfo = classDecl.getFields().stream().map(
-					field -> (FieldInfo)new FieldInfoImpl(
+					field -> (FieldInfo) new FieldInfoImpl(
 							field.getVariables().get(0).getNameAsString(),
 							field.getVariables().get(0).getTypeAsString()
 					)
@@ -89,7 +89,43 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 	@Override
 	public Future<PackageReport> getPackageReport(String srcPackagePath) {
-		return null;
+		return vertx.executeBlocking(h -> {
+			PackageDeclaration packageDecl = null;
+			try {
+				packageDecl = new JavaParser()
+						.parse(new File(srcPackagePath))
+						.getResult().get()
+						.findFirst(PackageDeclaration.class).get();
+			} catch (FileNotFoundException e) {
+				h.fail("Package not found: " + e.getMessage());
+			}
+			var fullPackageName = packageDecl.getNameAsString();
+			List<ClassReport> classReports = new CopyOnWriteArrayList<>();
+			List<InterfaceReport> interfaceReports = new CopyOnWriteArrayList<>();
+			final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(new File(srcPackagePath).listFiles())).toList();
+			for(File file : innerFiles){
+				if(file.isFile()){
+					ClassOrInterfaceDeclaration classInterfaceDecl = null;
+					try{
+						classInterfaceDecl = new JavaParser()
+								.parse(new File(srcPackagePath))
+								.getResult().get()
+								.findFirst(ClassOrInterfaceDeclaration.class).get();
+					}catch (Exception ignored){}
+					if(classInterfaceDecl.isInterface()){
+						getInterfaceReport(file.getPath()).onSuccess(interfaceReports::add);
+					} else {
+						getClassReport(file.getPath()).onSuccess(classReports::add);
+					}
+				} else {
+					getPackageReport(file.getPath()).onSuccess(pr -> {
+						classReports.addAll(pr.getClassReports());
+						interfaceReports.addAll(pr.getInterfaceReports());
+					});
+				}
+			}
+			h.complete(new PackageReportImpl(fullPackageName, srcPackagePath, classReports, interfaceReports));
+		});
 	}
 
 	@Override
