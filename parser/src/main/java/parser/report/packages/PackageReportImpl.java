@@ -5,7 +5,8 @@ import parser.info.MethodInfo;
 
 import java.util.List;
 
-public class PackageReportImpl implements PackageReport{
+public class PackageReportImpl implements PackageReport {
+
     @Override
     public String getFullClassName() {
         return null;
