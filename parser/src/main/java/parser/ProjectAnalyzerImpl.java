@@ -146,27 +146,41 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		AtomicInteger count = new AtomicInteger(1);
 		Map<String, ClassReport> crm = new ConcurrentHashMap<>();
 		return vertx.executeBlocking(h -> {
-			List<ClassReport> mainClass = new ArrayList<>();
+			List<ClassReport> mainClass = new ArrayList<>(1);
+			mainClass.add(new ClassReportImpl("null", "", null, null));
+
 			count.incrementAndGet();
 			getPackageReport(srcProjectFolderPath).onSuccess(pr -> {
-
-				pr.getClassReports().forEach(cr -> crm.put(cr.getFullClassName(), cr));
+				pr.getClassReports().forEach(cr -> {
+					crm.put(cr.getFullClassName(), cr);
+					for(var method : cr.getMethodsInfo()){
+						if(method.getName().equals("main")){
+							mainClass.set(0, cr);
+						}
+					}
+				});
 
 				if(count.decrementAndGet() == 0){
-					h.complete(new ProjectReportImpl(mainClass.get(0).getFullClassName(), crm));
+					h.complete(new ProjectReportImpl(
+							mainClass.get(0).getFullClassName().equals("null") ?
+									"null" : mainClass.get(0).getFullClassName(), crm));
 				}
-
 			});
 
 			final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(new File(srcProjectFolderPath).listFiles())).toList();
 			for(File file : innerFiles){
 				if(file.isDirectory()){
 					getProjectReport(file.getPath()).onSuccess(pr -> {
-						if(pr.getMainClass() != null){
+						if(!pr.getMainClass().getFullClassName().equals("null")){
 							mainClass.set(0, pr.getMainClass());
 						}
+						for(ClassReport cr : pr.getAllClasses()){
+							crm.put(cr.getFullClassName(), cr);
+						}
 						if(count.decrementAndGet() == 0){
-							h.complete(new ProjectReportImpl(mainClass.get(0).getFullClassName(), crm));
+							h.complete(new ProjectReportImpl(
+									mainClass.get(0).getFullClassName().equals("null") ?
+											"null" : mainClass.get(0).getFullClassName(), crm));
 						}
 					});
 				}
