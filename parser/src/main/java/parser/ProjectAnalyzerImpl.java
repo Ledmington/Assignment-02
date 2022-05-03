@@ -4,6 +4,7 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.google.common.base.Equivalence;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -15,13 +16,17 @@ import parser.report.interfaces.InterfaceReportImpl;
 import parser.report.packages.PackageReport;
 import parser.report.packages.PackageReportImpl;
 import parser.report.project.ProjectReport;
+import parser.report.project.ProjectReportImpl;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
@@ -138,31 +143,39 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 	@Override
 	public Future<ProjectReport> getProjectReport(String srcProjectFolderPath) {
-		File project = new File(srcProjectFolderPath);
-		if (project.isFile()) {
-			//return vertx.fileSystem().open(srcProjectFolderPath, new OpenOptions().setRead(true));
-			return vertx.executeBlocking(h -> {
-				System.out.println("Parsing \"" + project + "\"");
-				try {
-					new JavaParser().parse(project);
-				} catch (FileNotFoundException e) {
-					throw new RuntimeException(e);
+		AtomicInteger count = new AtomicInteger(1);
+		Map<String, ClassReport> crm = new ConcurrentHashMap<>();
+		return vertx.executeBlocking(h -> {
+			List<ClassReport> mainClass = new ArrayList<>();
+			count.incrementAndGet();
+			getPackageReport(srcProjectFolderPath).onSuccess(pr -> {
+
+				pr.getClassReports().forEach(cr -> crm.put(cr.getFullClassName(), cr));
+
+				if(count.decrementAndGet() == 0){
+					h.complete(new ProjectReportImpl(mainClass.get(0).getFullClassName(), crm));
 				}
+
 			});
-		}
-		else if (project.isDirectory()) {
-			return vertx.executeBlocking(h -> {
-				System.out.println("Found directory \"" + srcProjectFolderPath + "\"");
-				final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(project.listFiles())).toList();
-				for(File file : innerFiles) {
-					vertx.executeBlocking(handler -> this.getProjectReport(file.getAbsolutePath()));
+
+			final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(new File(srcProjectFolderPath).listFiles())).toList();
+			for(File file : innerFiles){
+				if(file.isDirectory()){
+					getProjectReport(file.getPath()).onSuccess(pr -> {
+						if(pr.getMainClass() != null){
+							mainClass.set(0, pr.getMainClass());
+						}
+						if(count.decrementAndGet() == 0){
+							h.complete(new ProjectReportImpl(mainClass.get(0).getFullClassName(), crm));
+						}
+					});
 				}
-			});
-		}
-		else {
-			// maybe it is a symbolic link
-			throw new Error("Unknown file type");
-		}
+			}
+
+			if(count.decrementAndGet() == 0){
+				h.complete(new ProjectReportImpl(mainClass.get(0).getFullClassName(), crm));
+			}
+		});
 	}
 
 	@Override

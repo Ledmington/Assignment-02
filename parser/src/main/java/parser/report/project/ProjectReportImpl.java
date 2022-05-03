@@ -9,7 +9,7 @@ import java.util.Objects;
 public class ProjectReportImpl implements ProjectReport {
 
 	private final Map<String, ClassReport> reports;
-	private final String mainClass;
+	private String mainClass;
 
 	public ProjectReportImpl(final String mainClass, final Map<String, ClassReport> reports) {
 		Objects.requireNonNull(mainClass);
@@ -36,4 +36,5 @@ public class ProjectReportImpl implements ProjectReport {
 	public ClassReport getClassReport(String fullClassName) {
 		return reports.get(fullClassName);
 	}
+
 }
