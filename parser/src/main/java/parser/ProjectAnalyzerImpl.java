@@ -6,6 +6,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.eventbus.EventBus;
 import parser.info.*;
 import parser.report.classes.ClassReport;
 import parser.report.classes.ClassReportImpl;
@@ -29,7 +30,6 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 	private final Vertx vertx;
 	//private final ParserVerticle pv;
-	private Consumer<ProjectElem> callback;
 
 	public ProjectAnalyzerImpl() {
 		vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(Runtime.getRuntime().availableProcessors()));
@@ -186,30 +186,49 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 	}
 
 	@Override
-	public void analyzeProject(String srcProjectFolderName, Consumer<ProjectElem> callback) throws FileNotFoundException {
+	public void analyzeProject(String srcProjectFolderName, EventBus topic) throws FileNotFoundException {
 		Objects.requireNonNull(srcProjectFolderName);
-		Objects.requireNonNull(callback);
+		Objects.requireNonNull(topic);
 		if (!new File(srcProjectFolderName).exists()) {
 			throw new FileNotFoundException(srcProjectFolderName + " does not exist");
 		}
 
-		AtomicInteger count = new AtomicInteger(1);
-		vertx.executeBlocking(h -> {
-			getPackageReport(srcProjectFolderName).onSuccess(pr -> {
-				// callback on package.
-				callback.accept(pr);
+		getPackageReport(srcProjectFolderName).onSuccess(pr -> {
+			// Publish package.
+			topic.publish("packages", pr);
 
-				// TODO: under comments.
-				// callback on classes.
-					// callback on fields
-					// callback on methos.
+			// Publish classes.
+			for(ClassReport cr : pr.getClassReports()){
+				topic.publish("classes", cr);
+				// Publish fields.
+				for(FieldInfo fi : cr.getFieldsInfo()){
+					topic.publish("fields", fi);
+				}
+				// Publish methods.
+				for(MethodInfo mi : cr.getMethodsInfo()){
+					topic.publish("methods", mi);
+				}
+			}
 
-				// callback on interfaces.
-					// callback on fields
-					// callback on methos.
-			});
+			// Publish interfaces.
+			for(InterfaceReport ir : pr.getInterfaceReports()){
+				topic.publish("interfaces", ir);
+				// Publish interface methods.
+				for(MethodInfo mi : ir.getMethodsInfo()){
+					topic.publish("methodSignatures", mi);
+				}
+			}
 		});
 
-		// TODO: recursive call on sub folder.
+		// Recursive call on sub folders.
+		Arrays.stream(Objects.requireNonNull(new File(srcProjectFolderName).listFiles()))
+				.filter(File::isDirectory)
+				.forEach(f -> {
+					try {
+						analyzeProject(f.getPath(), topic);
+					} catch (FileNotFoundException ignored) {
+						// For sure not missing.
+					}
+				});
 	}
 }
