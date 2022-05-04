@@ -2,10 +2,11 @@ package parser.report.classes;
 
 import parser.info.FieldInfo;
 import parser.info.MethodInfo;
+import parser.info.ProjectElem;
 
 import java.util.List;
 
-public interface ClassReport {
+public interface ClassReport extends ProjectElem {
 
 	String getFullClassName();
 	

@@ -200,9 +200,12 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 			throw new FileNotFoundException(srcProjectFolderName + " does not exist");
 		}
 
-		this.callback = callback;
-		Future<ProjectReport> fut = getProjectReport(srcProjectFolderName);
-
-		fut.onComplete(System.out::println);
+		AtomicInteger count = new AtomicInteger(1);
+		vertx.executeBlocking(h -> {
+			getPackageReport(srcProjectFolderName).onSuccess(pr -> {
+				callback.accept(pr);
+				
+			});
+		});
 	}
 }
