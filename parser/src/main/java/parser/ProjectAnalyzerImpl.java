@@ -140,45 +140,41 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		AtomicInteger count = new AtomicInteger(1);
 		Map<String, ClassReport> crm = new ConcurrentHashMap<>();
 		return vertx.executeBlocking(h -> {
-			AtomicReference<String> mainClass = new AtomicReference<>();
+			AtomicReference<ClassReport> mainClass = new AtomicReference<>();
 
 			count.incrementAndGet();
 			getPackageReport(srcProjectFolderPath).onSuccess(pr -> {
 				mainClass.set(
 						pr.getClassReports().stream()
 								.peek(cr -> crm.put(cr.getFullClassName(), cr))
-								.map(ClassReport::getMethodsInfo)
-								.flatMap(Collection::stream)
-								.map(MethodInfo::getName)
-								.filter(mi -> mi.equals("main"))
+								.filter(cr -> cr.getMethodsInfo().stream().anyMatch(mi -> mi.getName().equals("main")))
 								.findFirst()
-								.orElse("null")
+								.orElse(new ClassReportImpl("null", "", null, null))
 				);
 				if(count.decrementAndGet() == 0){
-					h.complete(new ProjectReportImpl(mainClass.get(), crm));
+					h.complete(new ProjectReportImpl(mainClass.get().getFullClassName(), crm));
 				}
 			});
 
 			final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(new File(srcProjectFolderPath).listFiles())).toList();
-			for(File file : innerFiles){
-				if(file.isDirectory()){
-					count.incrementAndGet();
-					getProjectReport(file.getPath()).onSuccess(pr -> {
-						if(pr.getMainClass() != null){
-							mainClass.set(pr.getMainClass().getFullClassName());
-						}
-						for(ClassReport cr : pr.getAllClasses()){
-							crm.put(cr.getFullClassName(), cr);
-						}
-						if(count.decrementAndGet() == 0){
-							h.complete(new ProjectReportImpl(mainClass.get(), crm));
-						}
-					});
-				}
+			for (File file : innerFiles) {
+				if (!file.isDirectory()) continue;
+				count.incrementAndGet();
+				getProjectReport(file.getPath()).onSuccess(pr -> {
+					if(pr.getMainClass() != null){
+						mainClass.set(pr.getMainClass());
+					}
+					for(ClassReport cr : pr.getAllClasses()){
+						crm.put(cr.getFullClassName(), cr);
+					}
+					if(count.decrementAndGet() == 0){
+						h.complete(new ProjectReportImpl(mainClass.get().getFullClassName(), crm));
+					}
+				});
 			}
 
 			if(count.decrementAndGet() == 0){
-				h.complete(new ProjectReportImpl(mainClass.get(), crm));
+				h.complete(new ProjectReportImpl(mainClass.get().getFullClassName(), crm));
 			}
 		});
 	}
