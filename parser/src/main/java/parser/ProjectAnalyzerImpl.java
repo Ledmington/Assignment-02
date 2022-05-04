@@ -204,7 +204,6 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		vertx.executeBlocking(h -> {
 			getPackageReport(srcProjectFolderName).onSuccess(pr -> {
 				callback.accept(pr);
-				
 			});
 		});
 	}
