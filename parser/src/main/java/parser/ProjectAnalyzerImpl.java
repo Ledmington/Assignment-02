@@ -49,16 +49,20 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		return collect(decl.getFields(), FieldInfoImpl::new);
 	}
 
+	private ClassOrInterfaceDeclaration getFirstInside(final String filePath) throws FileNotFoundException {
+		return new JavaParser()
+				.parse(new File(filePath))
+				.getResult()
+				.flatMap(result -> result.findFirst(ClassOrInterfaceDeclaration.class))
+				.orElseThrow();
+	}
+
 	@Override
 	public Future<InterfaceReport> getInterfaceReport(String srcInterfacePath) {
 		return vertx.executeBlocking(h -> {
 			ClassOrInterfaceDeclaration interDecl = null;
 			try {
-				interDecl = new JavaParser()
-						.parse(new File(srcInterfacePath))
-						.getResult()
-						.flatMap(result -> result
-								.findFirst(ClassOrInterfaceDeclaration.class)).orElseThrow();
+				interDecl = getFirstInside(srcInterfacePath);
 			} catch (FileNotFoundException e) {
 				h.fail("File no found: " + e.getMessage());
 			}
@@ -73,10 +77,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		return vertx.executeBlocking(h -> {
 			ClassOrInterfaceDeclaration classDecl = null;
 			try {
-				classDecl = new JavaParser()
-						.parse(new File(srcClassPath))
-						.getResult().flatMap(result -> result
-								.findFirst(ClassOrInterfaceDeclaration.class)).orElseThrow();
+				classDecl = getFirstInside(srcClassPath);
 			} catch (FileNotFoundException e) {
 				h.fail("Class not found: " + e.getMessage());
 			}
@@ -95,38 +96,37 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 			AtomicInteger count = new AtomicInteger(1);
 			final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(new File(srcPackagePath).listFiles())).toList();
 			String fullPackageName = null;
-			for(File file : innerFiles){
-				if(file.isFile()){
-					ClassOrInterfaceDeclaration classInterfaceDecl = null;
-					try{
-						CompilationUnit cu = new JavaParser()
-								.parse(file)
-								.getResult().orElseThrow();
-						classInterfaceDecl = cu
-								.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow();
-						fullPackageName = cu.getPackageDeclaration().orElseThrow().getNameAsString();
+			for (File file : innerFiles) {
+				if (!file.isFile()) continue;
+				ClassOrInterfaceDeclaration classInterfaceDecl;
+				try {
+					CompilationUnit cu = new JavaParser()
+							.parse(file)
+							.getResult().orElseThrow();
+					classInterfaceDecl = cu
+							.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow();
+					fullPackageName = cu.getPackageDeclaration().orElseThrow().getNameAsString();
 
-						String finalFullPackageName = fullPackageName;
+					String finalFullPackageName = fullPackageName;
 
-						if(classInterfaceDecl.isInterface()){
-							count.incrementAndGet();
-							getInterfaceReport(file.getPath()).onSuccess(ir ->{
-								interfaceReports.add(ir);
-								if(count.decrementAndGet() == 0){
-									h.complete(new PackageReportImpl(finalFullPackageName, srcPackagePath, classReports, interfaceReports));
-								}
-							});
-						} else if(classInterfaceDecl.isClassOrInterfaceDeclaration()){
-							count.incrementAndGet();
-							getClassReport(file.getPath()).onSuccess(cr ->{
-								classReports.add(cr);
-								if(count.decrementAndGet() == 0){
-									h.complete(new PackageReportImpl(finalFullPackageName, srcPackagePath, classReports, interfaceReports));
-								}
-							});
-						}
-					}catch (Exception ignored){}
-				}
+					if(classInterfaceDecl.isInterface()){
+						count.incrementAndGet();
+						getInterfaceReport(file.getPath()).onSuccess(ir ->{
+							interfaceReports.add(ir);
+							if(count.decrementAndGet() == 0){
+								h.complete(new PackageReportImpl(finalFullPackageName, srcPackagePath, classReports, interfaceReports));
+							}
+						});
+					} else if(classInterfaceDecl.isClassOrInterfaceDeclaration()){
+						count.incrementAndGet();
+						getClassReport(file.getPath()).onSuccess(cr ->{
+							classReports.add(cr);
+							if(count.decrementAndGet() == 0){
+								h.complete(new PackageReportImpl(finalFullPackageName, srcPackagePath, classReports, interfaceReports));
+							}
+						});
+					}
+				} catch (Exception ignored) {}
 			}
 			if(count.decrementAndGet() == 0){
 				h.complete(new PackageReportImpl(fullPackageName, srcPackagePath, classReports, interfaceReports));
