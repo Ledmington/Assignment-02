@@ -196,8 +196,20 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		AtomicInteger count = new AtomicInteger(1);
 		vertx.executeBlocking(h -> {
 			getPackageReport(srcProjectFolderName).onSuccess(pr -> {
+				// callback on package.
 				callback.accept(pr);
+
+				// TODO: under comments.
+				// callback on classes.
+					// callback on fields
+					// callback on methos.
+
+				// callback on interfaces.
+					// callback on fields
+					// callback on methos.
 			});
 		});
+
+		// TODO: recursive call on sub folder.
 	}
 }
