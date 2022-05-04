@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
@@ -36,11 +37,16 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		//vertx.deployVerticle(pv);
 	}
 
+	private <X, T> List<T> collect(final List<X> fieldsOrMethods, final Function<X, T> mapper) {
+		return fieldsOrMethods.stream().map(mapper).toList();
+	}
+
 	private List<MethodInfo> collectMethods(final ClassOrInterfaceDeclaration decl) {
-		return decl.getMethods()
-				.stream()
-				.map(m -> (MethodInfo) new MethodInfoImpl(m))
-				.toList();
+		return collect(decl.getMethods(), MethodInfoImpl::new);
+	}
+
+	private List<FieldInfo> collectFields(final ClassOrInterfaceDeclaration decl) {
+		return collect(decl.getFields(), FieldInfoImpl::new);
 	}
 
 	@Override
@@ -76,10 +82,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 			}
 			String className = classDecl.getFullyQualifiedName().get();
 			List<MethodInfo> methodsInfo = collectMethods(classDecl);
-			List<FieldInfo> fieldsInfo = classDecl.getFields()
-					.stream()
-					.map(field -> (FieldInfo) new FieldInfoImpl(field))
-					.toList();
+			List<FieldInfo> fieldsInfo = collectFields(classDecl);
 			h.complete(new ClassReportImpl(className, srcClassPath, methodsInfo, fieldsInfo));
 		});
 	}
