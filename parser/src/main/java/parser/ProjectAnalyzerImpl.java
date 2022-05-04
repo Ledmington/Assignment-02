@@ -159,7 +159,6 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 						}
 					}
 				});
-
 				if(count.decrementAndGet() == 0){
 					h.complete(new ProjectReportImpl(
 							mainClass.get(0).getFullClassName().equals("null") ?
@@ -170,8 +169,9 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 			final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(new File(srcProjectFolderPath).listFiles())).toList();
 			for(File file : innerFiles){
 				if(file.isDirectory()){
+					count.incrementAndGet();
 					getProjectReport(file.getPath()).onSuccess(pr -> {
-						if(!pr.getMainClass().getFullClassName().equals("null")){
+						if(pr.getMainClass() != null){
 							mainClass.set(0, pr.getMainClass());
 						}
 						for(ClassReport cr : pr.getAllClasses()){
