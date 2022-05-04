@@ -1,8 +1,8 @@
 package parser;
 
+import io.vertx.core.Future;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import parser.report.classes.ClassReport;
 import parser.report.project.ProjectReport;
 import parser.report.project.ProjectReportImpl;
 
@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestProjectReport {
 
-    private ProjectReport pr;
     static private ProjectAnalyzer pa;
     static String path;
 
@@ -26,13 +25,13 @@ public class TestProjectReport {
 
     @Test
     public void testDoesNotAcceptNull() {
-        assertThrows(NullPointerException.class, () -> pr = new ProjectReportImpl(null, Map.of()));
-        assertThrows(NullPointerException.class, () -> pr = new ProjectReportImpl("abc", null));
+        assertThrows(NullPointerException.class, () -> new ProjectReportImpl(null, Map.of()));
+        assertThrows(NullPointerException.class, () -> new ProjectReportImpl("abc", null));
     }
 
     @Test
     public void testProjectReport(){
-        var pr = pa.getProjectReport(path);
+        Future<ProjectReport> pr = pa.getProjectReport(path);
         while(!pr.isComplete()) {
             try {
                 Thread.sleep(1); // Intended busy waiting

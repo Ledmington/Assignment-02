@@ -2,9 +2,7 @@ package parser;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.google.common.base.Equivalence;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -22,11 +20,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
@@ -40,6 +37,18 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		//vertx.deployVerticle(pv);
 	}
 
+	private <X, T> List<T> collect(final List<X> fieldsOrMethods, final Function<X, T> mapper) {
+		return fieldsOrMethods.stream().map(mapper).toList();
+	}
+
+	private List<MethodInfo> collectMethods(final ClassOrInterfaceDeclaration decl) {
+		return collect(decl.getMethods(), MethodInfoImpl::new);
+	}
+
+	private List<FieldInfo> collectFields(final ClassOrInterfaceDeclaration decl) {
+		return collect(decl.getFields(), FieldInfoImpl::new);
+	}
+
 	@Override
 	public Future<InterfaceReport> getInterfaceReport(String srcInterfacePath) {
 		return vertx.executeBlocking(h -> {
@@ -47,19 +56,14 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 			try {
 				interDecl = new JavaParser()
 						.parse(new File(srcInterfacePath))
-						.getResult().flatMap(result -> result
+						.getResult()
+						.flatMap(result -> result
 								.findFirst(ClassOrInterfaceDeclaration.class)).get();
 			} catch (FileNotFoundException e) {
 				h.fail("File no found: " + e.getMessage());
 			}
-			var fullInterfaceName = interDecl.getFullyQualifiedName().get();
-			var methodsInfo = interDecl.getMethods().stream().map(
-					method -> (MethodInfo)new MethodInfoImpl(
-							method.getNameAsString(),
-							method.getName().getBegin().get().line,
-							method.getName().getEnd().get().line
-					)
-			).toList();
+			String fullInterfaceName = interDecl.getFullyQualifiedName().get();
+			List<MethodInfo> methodsInfo = collectMethods(interDecl);
 			h.complete(new InterfaceReportImpl(fullInterfaceName, srcInterfacePath, methodsInfo));
 		});
 	}
@@ -76,20 +80,9 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 			} catch (FileNotFoundException e) {
 				h.fail("Class not found: " + e.getMessage());
 			}
-			var className = classDecl.getFullyQualifiedName().get();
-			var methodsInfo = classDecl.getMethods().stream().map(
-					method -> (MethodInfo) new MethodInfoImpl(
-							method.getNameAsString(),
-							method.getName().getBegin().get().line,
-							method.getName().getEnd().get().line
-					)
-			).toList();
-			var fieldsInfo = classDecl.getFields().stream().map(
-					field -> (FieldInfo) new FieldInfoImpl(
-							field.getVariables().get(0).getNameAsString(),
-							field.getVariables().get(0).getTypeAsString()
-					)
-			).toList();
+			String className = classDecl.getFullyQualifiedName().get();
+			List<MethodInfo> methodsInfo = collectMethods(classDecl);
+			List<FieldInfo> fieldsInfo = collectFields(classDecl);
 			h.complete(new ClassReportImpl(className, srcClassPath, methodsInfo, fieldsInfo));
 		});
 	}

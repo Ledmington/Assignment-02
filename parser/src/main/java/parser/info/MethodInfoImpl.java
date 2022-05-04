@@ -1,5 +1,6 @@
 package parser.info;
 
+import com.github.javaparser.ast.body.MethodDeclaration;
 import parser.report.classes.ClassReport;
 
 import java.util.Objects;
@@ -23,6 +24,12 @@ public class MethodInfoImpl implements MethodInfo {
         this.name = name;
         this.startLine = start;
         this.endLine = end;
+    }
+
+    public MethodInfoImpl(final MethodDeclaration methDecl) {
+        this(methDecl.getNameAsString(),
+                methDecl.getName().getBegin().orElseThrow().line,
+                methDecl.getName().getEnd().orElseThrow().line);
     }
 
     @Override
