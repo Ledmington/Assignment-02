@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -139,23 +140,22 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		AtomicInteger count = new AtomicInteger(1);
 		Map<String, ClassReport> crm = new ConcurrentHashMap<>();
 		return vertx.executeBlocking(h -> {
-			List<ClassReport> mainClass = new ArrayList<>(1);
-			mainClass.add(new ClassReportImpl("null", "", null, null));
+			AtomicReference<String> mainClass = new AtomicReference<>();
 
 			count.incrementAndGet();
 			getPackageReport(srcProjectFolderPath).onSuccess(pr -> {
-				pr.getClassReports().forEach(cr -> {
-					crm.put(cr.getFullClassName(), cr);
-					for(var method : cr.getMethodsInfo()){
-						if(method.getName().equals("main")){
-							mainClass.set(0, cr);
-						}
-					}
-				});
+				mainClass.set(
+						pr.getClassReports().stream()
+								.peek(cr -> crm.put(cr.getFullClassName(), cr))
+								.map(ClassReport::getMethodsInfo)
+								.flatMap(Collection::stream)
+								.map(MethodInfo::getName)
+								.filter(mi -> mi.equals("main"))
+								.findFirst()
+								.orElse("null")
+				);
 				if(count.decrementAndGet() == 0){
-					h.complete(new ProjectReportImpl(
-							mainClass.get(0).getFullClassName().equals("null") ?
-									"null" : mainClass.get(0).getFullClassName(), crm));
+					h.complete(new ProjectReportImpl(mainClass.get(), crm));
 				}
 			});
 
@@ -165,22 +165,20 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 					count.incrementAndGet();
 					getProjectReport(file.getPath()).onSuccess(pr -> {
 						if(pr.getMainClass() != null){
-							mainClass.set(0, pr.getMainClass());
+							mainClass.set(pr.getMainClass().getFullClassName());
 						}
 						for(ClassReport cr : pr.getAllClasses()){
 							crm.put(cr.getFullClassName(), cr);
 						}
 						if(count.decrementAndGet() == 0){
-							h.complete(new ProjectReportImpl(
-									mainClass.get(0).getFullClassName().equals("null") ?
-											"null" : mainClass.get(0).getFullClassName(), crm));
+							h.complete(new ProjectReportImpl(mainClass.get(), crm));
 						}
 					});
 				}
 			}
 
 			if(count.decrementAndGet() == 0){
-				h.complete(new ProjectReportImpl(mainClass.get(0).getFullClassName(), crm));
+				h.complete(new ProjectReportImpl(mainClass.get(), crm));
 			}
 		});
 	}
