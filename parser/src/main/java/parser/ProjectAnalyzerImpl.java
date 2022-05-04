@@ -50,12 +50,16 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		return collect(decl.getFields(), FieldInfoImpl::new);
 	}
 
-	private ClassOrInterfaceDeclaration getFirstInside(final String filePath) throws FileNotFoundException {
+	private ClassOrInterfaceDeclaration getFirstInside(final File file) throws FileNotFoundException {
 		return new JavaParser()
-				.parse(new File(filePath))
+				.parse(file)
 				.getResult()
 				.flatMap(result -> result.findFirst(ClassOrInterfaceDeclaration.class))
 				.orElseThrow();
+	}
+
+	private ClassOrInterfaceDeclaration getFirstInside(final String filePath) throws FileNotFoundException {
+		return getFirstInside(new File(filePath));
 	}
 
 	@Override
