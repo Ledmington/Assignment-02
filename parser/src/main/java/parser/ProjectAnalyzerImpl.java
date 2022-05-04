@@ -58,11 +58,11 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 						.parse(new File(srcInterfacePath))
 						.getResult()
 						.flatMap(result -> result
-								.findFirst(ClassOrInterfaceDeclaration.class)).get();
+								.findFirst(ClassOrInterfaceDeclaration.class)).orElseThrow();
 			} catch (FileNotFoundException e) {
 				h.fail("File no found: " + e.getMessage());
 			}
-			String fullInterfaceName = interDecl.getFullyQualifiedName().get();
+			String fullInterfaceName = interDecl.getFullyQualifiedName().orElseThrow();
 			List<MethodInfo> methodsInfo = collectMethods(interDecl);
 			h.complete(new InterfaceReportImpl(fullInterfaceName, srcInterfacePath, methodsInfo));
 		});
@@ -76,11 +76,11 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 				classDecl = new JavaParser()
 						.parse(new File(srcClassPath))
 						.getResult().flatMap(result -> result
-								.findFirst(ClassOrInterfaceDeclaration.class)).get();
+								.findFirst(ClassOrInterfaceDeclaration.class)).orElseThrow();
 			} catch (FileNotFoundException e) {
 				h.fail("Class not found: " + e.getMessage());
 			}
-			String className = classDecl.getFullyQualifiedName().get();
+			String className = classDecl.getFullyQualifiedName().orElseThrow();
 			List<MethodInfo> methodsInfo = collectMethods(classDecl);
 			List<FieldInfo> fieldsInfo = collectFields(classDecl);
 			h.complete(new ClassReportImpl(className, srcClassPath, methodsInfo, fieldsInfo));
@@ -101,10 +101,10 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 					try{
 						CompilationUnit cu = new JavaParser()
 								.parse(file)
-								.getResult().get();
+								.getResult().orElseThrow();
 						classInterfaceDecl = cu
-								.findFirst(ClassOrInterfaceDeclaration.class).get();
-						fullPackageName = cu.getPackageDeclaration().get().getNameAsString();
+								.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow();
+						fullPackageName = cu.getPackageDeclaration().orElseThrow().getNameAsString();
 
 						String finalFullPackageName = fullPackageName;
 
