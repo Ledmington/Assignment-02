@@ -2,14 +2,12 @@ package parser;
 
 import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
-import parser.info.ProjectElem;
 import parser.report.classes.ClassReport;
 import parser.report.interfaces.InterfaceReport;
 import parser.report.packages.PackageReport;
 import parser.report.project.ProjectReport;
 
 import java.io.FileNotFoundException;
-import java.util.function.*;
 
 public interface ProjectAnalyzer {
 

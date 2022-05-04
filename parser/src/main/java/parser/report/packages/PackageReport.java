@@ -1,12 +1,11 @@
 package parser.report.packages;
 
-import parser.info.ProjectElem;
 import parser.report.classes.ClassReport;
 import parser.report.interfaces.InterfaceReport;
 
 import java.util.List;
 
-public interface PackageReport extends ProjectElem {
+public interface PackageReport {
 
 	String getFullPackageName();
 	
