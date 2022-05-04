@@ -47,8 +47,8 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 			try {
 				interDecl = new JavaParser()
 						.parse(new File(srcInterfacePath))
-						.getResult().get()
-						.findFirst(ClassOrInterfaceDeclaration.class).get();
+						.getResult().flatMap(result -> result
+								.findFirst(ClassOrInterfaceDeclaration.class)).get();
 			} catch (FileNotFoundException e) {
 				h.fail("File no found: " + e.getMessage());
 			}
@@ -71,8 +71,8 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 			try {
 				classDecl = new JavaParser()
 						.parse(new File(srcClassPath))
-						.getResult().get()
-						.findFirst(ClassOrInterfaceDeclaration.class).get();
+						.getResult().flatMap(result -> result
+								.findFirst(ClassOrInterfaceDeclaration.class)).get();
 			} catch (FileNotFoundException e) {
 				h.fail("Class not found: " + e.getMessage());
 			}

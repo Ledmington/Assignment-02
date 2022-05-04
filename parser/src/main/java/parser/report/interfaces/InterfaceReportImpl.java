@@ -27,6 +27,6 @@ public class InterfaceReportImpl implements InterfaceReport{
 
     @Override
     public List<MethodInfo> getMethodsInfo() {
-        return this.methodsInfo;
+        return methodsInfo;
     }
 }

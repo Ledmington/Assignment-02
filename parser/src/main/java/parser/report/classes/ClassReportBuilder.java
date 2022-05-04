@@ -10,8 +10,8 @@ public class ClassReportBuilder {
 
     private String className;
     private String fileName;
-    private List<MethodInfo> methods = new LinkedList<>();
-    private List<FieldInfo> fields = new LinkedList<>();
+    private final List<MethodInfo> methods = new LinkedList<>();
+    private final List<FieldInfo> fields = new LinkedList<>();
     private boolean built = false;
 
     public ClassReportBuilder className(final String name) {
