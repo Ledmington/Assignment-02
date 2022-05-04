@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestProjectReport {
-    
+
     static private ProjectAnalyzer pa;
     static String path;
 
