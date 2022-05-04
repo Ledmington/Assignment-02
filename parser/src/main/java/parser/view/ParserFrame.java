@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 public class ParserFrame extends JFrame {
-	public ParserFrame(final ProjectAnalyzer pa) {
+	public ParserFrame(final ProjectAnalyzer pa) {/*
 		super("Project parser");
 
 		this.setLayout(new BorderLayout());
@@ -33,6 +33,6 @@ public class ParserFrame extends JFrame {
 
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
-		this.pack();
+		this.pack();*/
 	}
 }
