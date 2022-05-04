@@ -75,12 +75,10 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 					.stream()
 					.map(m -> (MethodInfo) new MethodInfoImpl(m))
 					.toList();
-			List<FieldInfo> fieldsInfo = classDecl.getFields().stream().map(
-					field -> (FieldInfo) new FieldInfoImpl(
-							field.getVariables().get(0).getNameAsString(),
-							field.getVariables().get(0).getTypeAsString()
-					)
-			).toList();
+			List<FieldInfo> fieldsInfo = classDecl.getFields()
+					.stream()
+					.map(field -> (FieldInfo) new FieldInfoImpl(field))
+					.toList();
 			h.complete(new ClassReportImpl(className, srcClassPath, methodsInfo, fieldsInfo));
 		});
 	}

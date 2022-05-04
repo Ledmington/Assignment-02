@@ -1,5 +1,6 @@
 package parser.info;
 
+import com.github.javaparser.ast.body.FieldDeclaration;
 import parser.report.classes.ClassReport;
 
 import java.util.Objects;
@@ -14,6 +15,11 @@ public class FieldInfoImpl implements FieldInfo {
         Objects.requireNonNull(type);
         this.name = name;
         this.typeName = type;
+    }
+
+    public FieldInfoImpl(final FieldDeclaration fieldDecl) {
+        this(fieldDecl.getVariables().get(0).getNameAsString(),
+                fieldDecl.getVariables().get(0).getTypeAsString());
     }
 
     @Override
