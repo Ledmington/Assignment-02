@@ -36,6 +36,13 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 		//vertx.deployVerticle(pv);
 	}
 
+	private List<MethodInfo> collectMethods(final ClassOrInterfaceDeclaration decl) {
+		return decl.getMethods()
+				.stream()
+				.map(m -> (MethodInfo) new MethodInfoImpl(m))
+				.toList();
+	}
+
 	@Override
 	public Future<InterfaceReport> getInterfaceReport(String srcInterfacePath) {
 		return vertx.executeBlocking(h -> {
@@ -50,10 +57,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 				h.fail("File no found: " + e.getMessage());
 			}
 			String fullInterfaceName = interDecl.getFullyQualifiedName().get();
-			List<MethodInfo> methodsInfo = interDecl.getMethods()
-					.stream()
-					.map(m -> (MethodInfo) new MethodInfoImpl(m))
-					.toList();
+			List<MethodInfo> methodsInfo = collectMethods(interDecl);
 			h.complete(new InterfaceReportImpl(fullInterfaceName, srcInterfacePath, methodsInfo));
 		});
 	}
@@ -71,10 +75,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 				h.fail("Class not found: " + e.getMessage());
 			}
 			String className = classDecl.getFullyQualifiedName().get();
-			List<MethodInfo> methodsInfo = classDecl.getMethods()
-					.stream()
-					.map(m -> (MethodInfo) new MethodInfoImpl(m))
-					.toList();
+			List<MethodInfo> methodsInfo = collectMethods(classDecl);
 			List<FieldInfo> fieldsInfo = classDecl.getFields()
 					.stream()
 					.map(field -> (FieldInfo) new FieldInfoImpl(field))
