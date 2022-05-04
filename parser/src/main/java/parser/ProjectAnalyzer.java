@@ -1,14 +1,13 @@
 package parser;
 
 import io.vertx.core.*;
-import parser.info.ProjectElem;
+import io.vertx.core.eventbus.EventBus;
 import parser.report.classes.ClassReport;
 import parser.report.interfaces.InterfaceReport;
 import parser.report.packages.PackageReport;
 import parser.report.project.ProjectReport;
 
 import java.io.FileNotFoundException;
-import java.util.function.*;
 
 public interface ProjectAnalyzer {
 
@@ -46,10 +45,10 @@ public interface ProjectAnalyzer {
 	
 	/**
 	 * Async function that analyze a project given the full path of the project folder,
-	 * executing the callback each time a project element is found 
+	 * publishing every element everytime one is found
 	 * 
 	 * @param srcProjectFolderName Full path of project folder
-	 * @param callback Action to be performed on every project element
+	 * @param topic EventBus where to publish elements of the project.
 	 */
-	void analyzeProject(String srcProjectFolderName, Consumer<ProjectElem> callback) throws FileNotFoundException;
+	void analyzeProject(String srcProjectFolderName, EventBus topic) throws FileNotFoundException;
 }

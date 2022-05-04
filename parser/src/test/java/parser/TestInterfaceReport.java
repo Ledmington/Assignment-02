@@ -21,9 +21,12 @@ public class TestInterfaceReport {
     }
 
     @Test
-    public void testFullInterfaceName(){
+    public void testInterfaceReport(){
         var ir = pa.getInterfaceReport(path);
         while(!ir.isComplete()){}  // Intended busy waiting. Add a short sleep inside?
+        if(ir.failed()){
+            fail(ir.cause());
+        }
         assertEquals("parser.ProjectAnalyzer", ir.result().getFullInterfaceName());
         assertEquals(path, ir.result().getSrcFullFileName());
         assertEquals(5, ir.result().getMethodsInfo().size());

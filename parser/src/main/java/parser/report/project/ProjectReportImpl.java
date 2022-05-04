@@ -14,9 +14,6 @@ public class ProjectReportImpl implements ProjectReport {
 	public ProjectReportImpl(final String mainClass, final Map<String, ClassReport> reports) {
 		Objects.requireNonNull(mainClass);
 		Objects.requireNonNull(reports);
-		if (!reports.containsKey(mainClass)) {
-			throw new IllegalArgumentException("mainClass is not contained in reports");
-		}
 
 		this.reports = reports;
 		this.mainClass = mainClass;
@@ -36,4 +33,5 @@ public class ProjectReportImpl implements ProjectReport {
 	public ClassReport getClassReport(String fullClassName) {
 		return reports.get(fullClassName);
 	}
+
 }
