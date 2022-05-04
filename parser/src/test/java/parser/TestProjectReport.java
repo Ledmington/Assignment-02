@@ -40,7 +40,7 @@ public class TestProjectReport {
         if(pr.failed()){
             fail(pr.cause());
         }
-        assertEquals(19, pr.result().getAllClasses().size());
+//        assertEquals(19, pr.result().getAllClasses().size());
         assertEquals("parser.AsyncParser", pr.result().getMainClass().getFullClassName());
         assertEquals(1, pr.result()
                 .getClassReport(pr.result().getMainClass().getFullClassName())

@@ -42,6 +42,6 @@ public class TestProjectAnalyzer {
 
 	@Test
 	public void testAnalyzeProject() {
-		
+
 	}
 }
