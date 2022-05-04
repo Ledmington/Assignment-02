@@ -60,38 +60,36 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 	@Override
 	public Future<InterfaceReport> getInterfaceReport(String srcInterfacePath) {
-		return vertx.executeBlocking(h -> {
-			ClassOrInterfaceDeclaration interDecl = null;
+		return vertx.executeBlocking(handler -> {
 			try {
-				interDecl = getFirstInside(srcInterfacePath);
+				ClassOrInterfaceDeclaration interDecl = getFirstInside(srcInterfacePath);
+				String fullInterfaceName = interDecl.getFullyQualifiedName().orElseThrow();
+				List<MethodInfo> methodsInfo = collectMethods(interDecl);
+				handler.complete(new InterfaceReportImpl(fullInterfaceName, srcInterfacePath, methodsInfo));
 			} catch (FileNotFoundException e) {
-				h.fail("File no found: " + e.getMessage());
+				handler.fail("File not found: " + e.getMessage());
 			}
-			String fullInterfaceName = interDecl.getFullyQualifiedName().orElseThrow();
-			List<MethodInfo> methodsInfo = collectMethods(interDecl);
-			h.complete(new InterfaceReportImpl(fullInterfaceName, srcInterfacePath, methodsInfo));
 		});
 	}
 
 	@Override
 	public Future<ClassReport> getClassReport(String srcClassPath) {
-		return vertx.executeBlocking(h -> {
-			ClassOrInterfaceDeclaration classDecl = null;
+		return vertx.executeBlocking(handler -> {
 			try {
-				classDecl = getFirstInside(srcClassPath);
+				ClassOrInterfaceDeclaration classDecl = getFirstInside(srcClassPath);
+				String className = classDecl.getFullyQualifiedName().orElseThrow();
+				List<MethodInfo> methodsInfo = collectMethods(classDecl);
+				List<FieldInfo> fieldsInfo = collectFields(classDecl);
+				handler.complete(new ClassReportImpl(className, srcClassPath, methodsInfo, fieldsInfo));
 			} catch (FileNotFoundException e) {
-				h.fail("Class not found: " + e.getMessage());
+				handler.fail("File not found: " + e.getMessage());
 			}
-			String className = classDecl.getFullyQualifiedName().orElseThrow();
-			List<MethodInfo> methodsInfo = collectMethods(classDecl);
-			List<FieldInfo> fieldsInfo = collectFields(classDecl);
-			h.complete(new ClassReportImpl(className, srcClassPath, methodsInfo, fieldsInfo));
 		});
 	}
 
 	@Override
 	public Future<PackageReport> getPackageReport(String srcPackagePath) {
-		return vertx.executeBlocking(h -> {
+		return vertx.executeBlocking(handler -> {
 			List<ClassReport> classReports = new CopyOnWriteArrayList<>();
 			List<InterfaceReport> interfaceReports = new CopyOnWriteArrayList<>();
 			AtomicInteger count = new AtomicInteger(1);
@@ -112,25 +110,25 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 					if(classInterfaceDecl.isInterface()){
 						count.incrementAndGet();
-						getInterfaceReport(file.getPath()).onSuccess(ir ->{
+						getInterfaceReport(file.getPath()).onSuccess(ir -> {
 							interfaceReports.add(ir);
-							if(count.decrementAndGet() == 0){
-								h.complete(new PackageReportImpl(finalFullPackageName, srcPackagePath, classReports, interfaceReports));
+							if(count.decrementAndGet() == 0) {
+								handler.complete(new PackageReportImpl(finalFullPackageName, srcPackagePath, classReports, interfaceReports));
 							}
 						});
-					} else if(classInterfaceDecl.isClassOrInterfaceDeclaration()){
+					} else if(classInterfaceDecl.isClassOrInterfaceDeclaration()) {
 						count.incrementAndGet();
-						getClassReport(file.getPath()).onSuccess(cr ->{
+						getClassReport(file.getPath()).onSuccess(cr -> {
 							classReports.add(cr);
-							if(count.decrementAndGet() == 0){
-								h.complete(new PackageReportImpl(finalFullPackageName, srcPackagePath, classReports, interfaceReports));
+							if(count.decrementAndGet() == 0) {
+								handler.complete(new PackageReportImpl(finalFullPackageName, srcPackagePath, classReports, interfaceReports));
 							}
 						});
 					}
 				} catch (Exception ignored) {}
 			}
-			if(count.decrementAndGet() == 0){
-				h.complete(new PackageReportImpl(fullPackageName, srcPackagePath, classReports, interfaceReports));
+			if(count.decrementAndGet() == 0) {
+				handler.complete(new PackageReportImpl(fullPackageName, srcPackagePath, classReports, interfaceReports));
 			}
 		});
 	}
@@ -139,8 +137,13 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 	public Future<ProjectReport> getProjectReport(String srcProjectFolderPath) {
 		AtomicInteger count = new AtomicInteger(1);
 		Map<String, ClassReport> crm = new ConcurrentHashMap<>();
-		return vertx.executeBlocking(h -> {
+		return vertx.executeBlocking(handler -> {
 			AtomicReference<ClassReport> mainClass = new AtomicReference<>();
+			Runnable completeIfZero = () -> {
+				if(count.decrementAndGet() == 0) {
+					handler.complete(new ProjectReportImpl(mainClass.get().getFullClassName(), crm));
+				}
+			};
 
 			count.incrementAndGet();
 			getPackageReport(srcProjectFolderPath).onSuccess(pr -> {
@@ -151,31 +154,21 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 								.findFirst()
 								.orElse(new ClassReportImpl("null", "", null, null))
 				);
-				if(count.decrementAndGet() == 0){
-					h.complete(new ProjectReportImpl(mainClass.get().getFullClassName(), crm));
-				}
+				completeIfZero.run();
 			});
 
-			final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(new File(srcProjectFolderPath).listFiles())).toList();
-			for (File file : innerFiles) {
-				if (!file.isDirectory()) continue;
-				count.incrementAndGet();
-				getProjectReport(file.getPath()).onSuccess(pr -> {
-					if(pr.getMainClass() != null){
-						mainClass.set(pr.getMainClass());
-					}
-					for(ClassReport cr : pr.getAllClasses()){
-						crm.put(cr.getFullClassName(), cr);
-					}
-					if(count.decrementAndGet() == 0){
-						h.complete(new ProjectReportImpl(mainClass.get().getFullClassName(), crm));
-					}
-				});
-			}
+			Arrays.stream(Objects.requireNonNull(new File(srcProjectFolderPath).listFiles()))
+					.filter(File::isDirectory)
+					.peek(f -> count.incrementAndGet())
+					.forEach(f -> getProjectReport(f.getPath()).onSuccess(pr -> {
+						if(pr.getMainClass() != null) {
+							mainClass.set(pr.getMainClass());
+						}
+						pr.getAllClasses().forEach(cr -> crm.put(cr.getFullClassName(), cr));
+						completeIfZero.run();
+					}));
 
-			if(count.decrementAndGet() == 0){
-				h.complete(new ProjectReportImpl(mainClass.get().getFullClassName(), crm));
-			}
+			completeIfZero.run();
 		});
 	}
 
