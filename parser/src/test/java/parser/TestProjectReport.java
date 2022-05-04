@@ -31,15 +31,13 @@ public class TestProjectReport {
     }
 
     @Test
-    public void testMainClassMustBePresent() {
-        Map<String, ClassReport> m = Map.of();
-        assertThrows(IllegalArgumentException.class, () -> pr = new ProjectReportImpl("main", m));
-    }
-
-    @Test
     public void testProjectReport(){
         var pr = pa.getProjectReport(path);
-        while(!pr.isComplete()){}  // Intended busy waiting. Add a short sleep inside?
+        while(!pr.isComplete()) {
+            try {
+                Thread.sleep(1); // Intended busy waiting
+            } catch (InterruptedException ignored) {}
+        }
         if(pr.failed()){
             fail(pr.cause());
         }
