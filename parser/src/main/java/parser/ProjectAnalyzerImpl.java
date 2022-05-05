@@ -20,6 +20,7 @@ import parser.report.project.ProjectReportImpl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,10 +31,12 @@ import java.util.function.Function;
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
 	private final Vertx vertx;
+	private final EventBus topic;
 	//private final ParserVerticle pv;
 
 	public ProjectAnalyzerImpl() {
 		vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(Runtime.getRuntime().availableProcessors()));
+		topic = vertx.eventBus();
 		//pv = new ParserVerticle(-365);
 		//vertx.deployVerticle(pv);
 	}
@@ -177,49 +180,85 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 	}
 
 	@Override
-	public void analyzeProject(String srcProjectFolderName, EventBus topic) throws FileNotFoundException {
+	public Future<Integer> analyzeProject(String srcProjectFolderName) throws FileNotFoundException {
 		Objects.requireNonNull(srcProjectFolderName);
 		Objects.requireNonNull(topic);
+		AtomicInteger count = new AtomicInteger(1);
+		AtomicInteger messagesCount = new AtomicInteger(0);
 		if (!new File(srcProjectFolderName).exists()) {
 			throw new FileNotFoundException(srcProjectFolderName + " does not exist");
 		}
 
-		getPackageReport(srcProjectFolderName).onSuccess(pr -> {
-			// Publish package.
-			topic.publish("packages", pr);
+		return vertx.executeBlocking(h -> {
+			count.incrementAndGet();
+			getPackageReport(srcProjectFolderName).onSuccess(pr -> {
+				// Publish package.
+				topic.publish("packages", pr.getFullPackageName());
+				messagesCount.incrementAndGet();
 
-			// Publish classes.
-			for(ClassReport cr : pr.getClassReports()){
-				topic.publish("classes", cr);
-				// Publish fields.
-				for(FieldInfo fi : cr.getFieldsInfo()){
-					topic.publish("fields", fi);
+				// Publish classes.
+				for(ClassReport cr : pr.getClassReports()){
+					topic.publish("classes", cr.getFullClassName());
+					messagesCount.incrementAndGet();
+					// Publish fields.
+					for(FieldInfo fi : cr.getFieldsInfo()){
+						topic.publish("fields", fi.getName());
+						messagesCount.incrementAndGet();
+					}
+					// Publish methods.
+					for(MethodInfo mi : cr.getMethodsInfo()){
+						topic.publish("methods", mi.getName());
+						messagesCount.incrementAndGet();
+					}
 				}
-				// Publish methods.
-				for(MethodInfo mi : cr.getMethodsInfo()){
-					topic.publish("methods", mi);
-				}
-			}
 
-			// Publish interfaces.
-			for(InterfaceReport ir : pr.getInterfaceReports()){
-				topic.publish("interfaces", ir);
-				// Publish interface methods.
-				for(MethodInfo mi : ir.getMethodsInfo()){
-					topic.publish("methodSignatures", mi);
+				// Publish interfaces.
+				for(InterfaceReport ir : pr.getInterfaceReports()){
+					topic.publish("interfaces", ir.getFullInterfaceName());
+					messagesCount.incrementAndGet();
+					// Publish interface methods.
+					for(MethodInfo mi : ir.getMethodsInfo()){
+						topic.publish("methodSignatures", mi.getName());
+						messagesCount.incrementAndGet();
+					}
 				}
+				if(count.decrementAndGet() == 0) {
+					h.complete(messagesCount.get());
+				}
+			});
+
+			// Recursive call on sub folders.
+			Arrays.stream(Objects.requireNonNull(new File(srcProjectFolderName).listFiles()))
+					.filter(File::isDirectory)
+					.forEach(f -> {
+						try {
+							count.incrementAndGet();
+							analyzeProject(f.getPath()).onSuccess(msgCount -> {
+								messagesCount.addAndGet(msgCount);
+								if(count.decrementAndGet() == 0) {
+									h.complete(messagesCount.get());
+								}
+							});
+						} catch (FileNotFoundException ignored) {
+							// For sure not missing.
+						}
+					});
+			if(count.decrementAndGet() == 0) {
+				h.complete(messagesCount.get());
 			}
 		});
+	}
 
-		// Recursive call on sub folders.
-		Arrays.stream(Objects.requireNonNull(new File(srcProjectFolderName).listFiles()))
-				.filter(File::isDirectory)
-				.forEach(f -> {
-					try {
-						analyzeProject(f.getPath(), topic);
-					} catch (FileNotFoundException ignored) {
-						// For sure not missing.
-					}
-				});
+	public EventBus getEventBus(){
+		return vertx.eventBus();
+	}
+
+	public Future<Integer> testEventBus(int much){
+		return vertx.executeBlocking(h->{
+			for(int i = 0; i < much; i++){
+				vertx.eventBus().publish("test", i);
+			}
+			h.complete(much);
+		});
 	}
 }
