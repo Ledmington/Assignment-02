@@ -1,3 +1,4 @@
 rootProject.name = 'Ass-02'
 include('nbodies')
 include('parser')
+include('reactive')
