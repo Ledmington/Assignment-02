@@ -8,22 +8,12 @@ import java.util.Objects;
 public class MethodInfoImpl implements MethodInfo {
 
     private final String name;
-    private final int startLine;
-    private final int endLine;
+    private final Range range;
 
     public MethodInfoImpl(final String name, final int start, final int end) {
         Objects.requireNonNull(name);
-
-        if (start < 0 || end < 0) {
-            throw new IllegalArgumentException("start and end must be >= 0");
-        }
-        if (start > end) {
-            throw new IllegalArgumentException("start must be <= end");
-        }
-
         this.name = name;
-        this.startLine = start;
-        this.endLine = end;
+        this.range = new Range(start, end);
     }
 
     public MethodInfoImpl(final MethodDeclaration methDecl) {
@@ -39,12 +29,12 @@ public class MethodInfoImpl implements MethodInfo {
 
     @Override
     public int getSrcBeginLine() {
-        return startLine;
+        return range.start();
     }
 
     @Override
     public int getEndBeginLine() {
-        return endLine;
+        return range.start();
     }
 
     @Override
