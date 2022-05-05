@@ -7,12 +7,12 @@ import java.util.List;
 
 public interface PackageReport {
 
-	String getFullPackageName();
-	
-	String getSrcFullFileName();
+    String getFullPackageName();
 
-	List<ClassReport> getClassReports();
+    String getSrcFullFileName();
 
-	List<InterfaceReport> getInterfaceReports();
-	
+    List<ClassReport> getClassReports();
+
+    List<InterfaceReport> getInterfaceReports();
+
 }

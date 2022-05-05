@@ -8,7 +8,8 @@ public class Timer {
     private Instant lastIteration;
     private Duration totalTime;
 
-    public Timer() {}
+    public Timer() {
+    }
 
     public Timer(final Timer timer) {
         this.beginning = timer.beginning;

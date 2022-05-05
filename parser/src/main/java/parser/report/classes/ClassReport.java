@@ -7,15 +7,15 @@ import java.util.List;
 
 public interface ClassReport {
 
-	String getFullClassName();
-	
-	String getSrcFullFileName();
+    String getFullClassName();
 
-	List<MethodInfo> getMethodsInfo();
+    String getSrcFullFileName();
 
-	List<FieldInfo> getFieldsInfo();
+    List<MethodInfo> getMethodsInfo();
 
-	static ClassReportBuilder builder() {
-		return new ClassReportBuilder();
-	}
+    List<FieldInfo> getFieldsInfo();
+
+    static ClassReportBuilder builder() {
+        return new ClassReportBuilder();
+    }
 }
