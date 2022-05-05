@@ -1,5 +1,17 @@
 package parser;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -7,6 +19,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.EventBus;
+
 import parser.info.FieldInfo;
 import parser.info.FieldInfoImpl;
 import parser.info.MethodInfo;
@@ -19,18 +32,6 @@ import parser.report.packages.PackageReport;
 import parser.report.packages.PackageReportImpl;
 import parser.report.project.ProjectReport;
 import parser.report.project.ProjectReportImpl;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
@@ -184,6 +185,10 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
         });
     }
 
+    private EventBus publish(final ProjectElement element, final Object message) {
+        return topic.publish(element.getName(), message);
+    }
+
     @Override
     public Future<Integer> analyzeProject(String srcProjectFolderName) throws FileNotFoundException {
         Objects.requireNonNull(srcProjectFolderName);
@@ -198,32 +203,32 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
             count.incrementAndGet();
             getPackageReport(srcProjectFolderName).onSuccess(pr -> {
                 // Publish package.
-                topic.publish("packages", pr.getFullPackageName());
+                this.publish(ProjectElement.PACKAGE, pr.getFullPackageName());
                 messagesCount.incrementAndGet();
 
                 // Publish classes.
                 for (ClassReport cr : pr.getClassReports()) {
-                    topic.publish("classes", cr.getFullClassName());
+                    this.publish(ProjectElement.CLASS, cr.getFullClassName());
                     messagesCount.incrementAndGet();
                     // Publish fields.
                     for (FieldInfo fi : cr.getFieldsInfo()) {
-                        topic.publish("fields", fi.getName());
+                        this.publish(ProjectElement.FIELD, fi.getName());
                         messagesCount.incrementAndGet();
                     }
                     // Publish methods.
                     for (MethodInfo mi : cr.getMethodsInfo()) {
-                        topic.publish("methods", mi.getName());
+                        this.publish(ProjectElement.METHOD, mi.getName());
                         messagesCount.incrementAndGet();
                     }
                 }
 
                 // Publish interfaces.
                 for (InterfaceReport ir : pr.getInterfaceReports()) {
-                    topic.publish("interfaces", ir.getFullInterfaceName());
+                    this.publish(ProjectElement.INTERFACE, ir.getFullInterfaceName());
                     messagesCount.incrementAndGet();
                     // Publish interface methods.
                     for (MethodInfo mi : ir.getMethodsInfo()) {
-                        topic.publish("methodSignatures", mi.getName());
+                        this.publish(ProjectElement.METHOD_SIGNATURE, mi.getName());
                         messagesCount.incrementAndGet();
                     }
                 }
