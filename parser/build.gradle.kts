@@ -25,9 +25,10 @@ dependencies {
 
     implementation("com.google.guava:guava:30.1.1-jre")
 
-    implementation("io.vertx:vertx-core:4.2.6")
-    implementation("io.vertx:vertx-web:4.2.6")
-    implementation("io.vertx:vertx-web-client:4.2.6")
+    val vertx_version = "4.2.6"
+    implementation("io.vertx:vertx-core:" + vertx_version)
+    implementation("io.vertx:vertx-web:" + vertx_version)
+    implementation("io.vertx:vertx-web-client:" + vertx_version)
 
     implementation("com.github.javaparser:javaparser-symbol-solver-core:3.24.2")
 }
