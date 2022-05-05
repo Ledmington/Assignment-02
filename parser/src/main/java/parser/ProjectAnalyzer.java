@@ -8,6 +8,7 @@ import parser.report.packages.PackageReport;
 import parser.report.project.ProjectReport;
 
 import java.io.FileNotFoundException;
+import java.util.concurrent.CompletableFuture;
 
 public interface ProjectAnalyzer {
 
@@ -48,7 +49,6 @@ public interface ProjectAnalyzer {
 	 * publishing every element everytime one is found
 	 * 
 	 * @param srcProjectFolderName Full path of project folder
-	 * @param topic EventBus where to publish elements of the project.
 	 */
-	void analyzeProject(String srcProjectFolderName, EventBus topic) throws FileNotFoundException;
+	Future<Integer> analyzeProject(String srcProjectFolderName) throws FileNotFoundException;
 }
