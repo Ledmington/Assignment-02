@@ -1,6 +1,7 @@
 package parser;
 
 import io.vertx.core.Future;
+import io.vertx.core.eventbus.EventBus;
 import parser.report.classes.ClassReport;
 import parser.report.interfaces.InterfaceReport;
 import parser.report.packages.PackageReport;
@@ -49,4 +50,6 @@ public interface ProjectAnalyzer {
      * @param srcProjectFolderName Full path of project folder
      */
     Future<Integer> analyzeProject(String srcProjectFolderName) throws FileNotFoundException;
+
+    EventBus getEventBus();
 }

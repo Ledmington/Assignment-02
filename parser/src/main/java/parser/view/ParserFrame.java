@@ -33,7 +33,9 @@ public class ParserFrame extends JFrame {
 				} catch (FileNotFoundException ignored) {}
 			}
 		});
-		this.add(chooseFolder, BorderLayout.CENTER);
+		this.add(chooseFolder, BorderLayout.NORTH);
+
+		this.add(new ProjectExplorer(pa.getEventBus()), BorderLayout.CENTER);
 
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
