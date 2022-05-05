@@ -1,11 +1,18 @@
 package parser.view;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+
+import java.awt.BorderLayout;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+
 import parser.ProjectAnalyzer;
 
-import javax.swing.*;
-
 public class ParserFrame extends JFrame {
-    public ParserFrame(final ProjectAnalyzer pa) {/*
+    public ParserFrame(final ProjectAnalyzer pa) {
 		super("Project parser");
 
 		this.setLayout(new BorderLayout());
@@ -22,7 +29,7 @@ public class ParserFrame extends JFrame {
 				File file = fc.getSelectedFile();
 				System.out.println("Opening \"" + file.getAbsolutePath() + "\"");
 				try {
-					pa.analyzeProject(file.getAbsolutePath(), f -> System.out.println("Fake analyzing \""+f+"\""));
+					pa.analyzeProject(file.getAbsolutePath());
 				} catch (FileNotFoundException ignored) {}
 			}
 		});
@@ -30,6 +37,6 @@ public class ParserFrame extends JFrame {
 
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
-		this.pack();*/
+		this.pack();
     }
 }

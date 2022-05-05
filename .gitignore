@@ -113,3 +113,5 @@ nbodies.toolbox/
 **/build
 
 .idea/
+
+**/bin
