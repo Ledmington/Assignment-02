@@ -115,3 +115,4 @@ nbodies.toolbox/
 .idea/
 
 **/bin
+.vscode/

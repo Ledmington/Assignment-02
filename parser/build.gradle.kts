@@ -1,7 +1,8 @@
 plugins {
-    id("application")
+    application
     id("java-library")
-    id("java")
+    java
+    jacoco
 }
 
 sourceSets {
