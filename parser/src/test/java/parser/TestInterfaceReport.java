@@ -2,11 +2,11 @@ package parser;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import parser.report.interfaces.InterfaceReport;
 
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestInterfaceReport {
 
@@ -14,17 +14,18 @@ public class TestInterfaceReport {
     static String path;
 
     @BeforeAll
-    public static void before(){
+    public static void before() {
         pa = new ProjectAnalyzerImpl();
         path = Paths.get(System.getProperty("user.dir"),
                 "src", "main", "java", "parser", "ProjectAnalyzer.java").toString();
     }
 
     @Test
-    public void testInterfaceReport(){
+    public void testInterfaceReport() {
         var ir = pa.getInterfaceReport(path);
-        while(!ir.isComplete()){}  // Intended busy waiting. Add a short sleep inside?
-        if(ir.failed()){
+        while (!ir.isComplete()) {
+        }  // Intended busy waiting. Add a short sleep inside?
+        if (ir.failed()) {
             fail(ir.cause());
         }
         assertEquals("parser.ProjectAnalyzer", ir.result().getFullInterfaceName());

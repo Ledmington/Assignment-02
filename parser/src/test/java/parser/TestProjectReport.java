@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestProjectReport {
 
@@ -18,7 +17,7 @@ public class TestProjectReport {
     static String path;
 
     @BeforeAll
-    static public void before(){
+    static public void before() {
         pa = new ProjectAnalyzerImpl();
         path = Paths.get(System.getProperty("user.dir"), "src").toString();
     }
@@ -30,14 +29,15 @@ public class TestProjectReport {
     }
 
     @Test
-    public void testProjectReport(){
+    public void testProjectReport() {
         Future<ProjectReport> pr = pa.getProjectReport(path);
-        while(!pr.isComplete()) {
+        while (!pr.isComplete()) {
             try {
                 Thread.sleep(1); // Intended busy waiting
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
-        if(pr.failed()){
+        if (pr.failed()) {
             fail(pr.cause());
         }
 //        assertEquals(19, pr.result().getAllClasses().size());

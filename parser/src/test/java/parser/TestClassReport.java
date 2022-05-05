@@ -13,21 +13,22 @@ public class TestClassReport {
     static String path;
 
     @BeforeAll
-    public static void before(){
+    public static void before() {
         pa = new ProjectAnalyzerImpl();
         path = Paths.get(System.getProperty("user.dir"),
                 "src", "main", "java", "parser", "ProjectAnalyzerImpl.java").toString();
     }
 
     @Test
-    public void testClassReport(){
+    public void testClassReport() {
         var cr = pa.getClassReport(path);
-        while(!cr.isComplete()){
+        while (!cr.isComplete()) {
             try {
                 Thread.sleep(1); // Intended busy waiting
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
-        if(cr.failed()){
+        if (cr.failed()) {
             fail(cr.cause());
         }
         assertEquals("parser.ProjectAnalyzerImpl", cr.result().getFullClassName());

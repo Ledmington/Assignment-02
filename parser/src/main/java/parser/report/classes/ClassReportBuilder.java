@@ -35,7 +35,7 @@ public class ClassReportBuilder {
     }
 
     public ClassReport build() {
-        if(built) {
+        if (built) {
             throw new IllegalStateException("Cannot use the same CLassReportBuilder twice");
         }
         built = true;

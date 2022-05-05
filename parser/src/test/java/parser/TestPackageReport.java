@@ -3,9 +3,10 @@ package parser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.nio.file.Paths;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestPackageReport {
 
@@ -13,17 +14,18 @@ public class TestPackageReport {
     static String path;
 
     @BeforeAll
-    public static void before(){
+    public static void before() {
         pa = new ProjectAnalyzerImpl();
         path = Paths.get(System.getProperty("user.dir"),
                 "src", "main", "java", "parser", "report", "packages").toString();
     }
 
     @Test
-    public void testPackageReport(){
+    public void testPackageReport() {
         var pr = pa.getPackageReport(path);
-        while(!pr.isComplete()){}
-        if(pr.failed()){
+        while (!pr.isComplete()) {
+        }
+        if (pr.failed()) {
             fail(pr.cause());
         }
         assertEquals("parser.report.packages", pr.result().getFullPackageName());

@@ -15,7 +15,7 @@ public class TestCopyBody {
 
     @BeforeEach
     public void setup() {
-        b = new Body(new P2d(1,1), new V2d(-1,-1), 10);
+        b = new Body(new P2d(1, 1), new V2d(-1, -1), 10);
     }
 
     @Test

@@ -14,10 +14,10 @@ public class MethodInfoImpl implements MethodInfo {
     public MethodInfoImpl(final String name, final int start, final int end) {
         Objects.requireNonNull(name);
 
-        if(start < 0 || end < 0) {
+        if (start < 0 || end < 0) {
             throw new IllegalArgumentException("start and end must be >= 0");
         }
-        if(start > end) {
+        if (start > end) {
             throw new IllegalArgumentException("start must be <= end");
         }
 
