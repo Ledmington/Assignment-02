@@ -1,5 +1,7 @@
 package parser.view;
 
+import java.util.Arrays;
+
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -19,23 +21,14 @@ public class ProjectExplorer extends JPanel {
 
         rootNode = new DefaultMutableTreeNode("Root");
         tree = new JTree(rootNode);
-        this.add(tree);
-        //this.add(new JScrollPane(tree));
+        this.add(new JScrollPane(tree));
 
-        bus.consumer(ProjectElement.PACKAGE.getName(), handler -> {
-            final String packageName = (String) handler.body();
-            System.out.println("Found package: " + packageName);
-            SwingUtilities.invokeLater(() -> {
-                rootNode.add(new DefaultMutableTreeNode(packageName));
+        for (ProjectElement element : ProjectElement.values()) {
+            bus.consumer(element.getName(), handler -> {
+                final String nodeName = (String) handler.body();
+                System.out.println("Found " + element.getName() + ": " + nodeName);
+                SwingUtilities.invokeLater(() -> rootNode.add(new DefaultMutableTreeNode(nodeName)));
             });
-        });
-
-        bus.consumer(ProjectElement.CLASS.getName(), handler -> {
-            final String className = (String) handler.body();
-            System.out.println("Found class: " + className);
-            SwingUtilities.invokeLater(() -> {
-                rootNode.add(new DefaultMutableTreeNode(className));
-            });
-        });
+        }
     }
 }
