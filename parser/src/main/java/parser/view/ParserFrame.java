@@ -49,6 +49,8 @@ public class ParserFrame extends JFrame {
 
 		this.add(new ProjectExplorer(pa.getEventBus()), BorderLayout.CENTER);
 
+		this.add(new StatisticsPanel(pa.getEventBus()), BorderLayout.EAST);
+
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
 		this.pack();

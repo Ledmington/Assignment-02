@@ -46,6 +46,7 @@ public class ProjectExplorer extends JPanel {
                 // adding all parents before the son
                 addAllNodes(fullPackageName);
             }
+            updateGUI();
         });
 
         Arrays.stream(ProjectElement.values())
@@ -54,6 +55,7 @@ public class ProjectExplorer extends JPanel {
                 bus.consumer(pe.getName(), handler -> {
                     final String fullName = (String) handler.body();
                     addAllNodes(fullName);
+                    SwingUtilities.updateComponentTreeUI(this);
                 });
             });
 
@@ -63,7 +65,7 @@ public class ProjectExplorer extends JPanel {
         Icon leafIcon = new ImageIcon("src/main/res/img/object.png");
         renderer.setClosedIcon(closedIcon);
         renderer.setOpenIcon(openIcon);
-        renderer.setLeafIcon(leafIcon);    
+        renderer.setLeafIcon(leafIcon);
     }
 
     private void addAllNodes(final String fullName) {
@@ -81,5 +83,13 @@ public class ProjectExplorer extends JPanel {
             nodes.put(packageName, packageNode);
             SwingUtilities.invokeLater(() -> nodes.get(parentPackage).add(packageNode));
         }
+    }
+
+    private void updateGUI() {
+        SwingUtilities.invokeLater(() -> {
+            this.invalidate();
+            this.validate();
+            this.repaint();
+        });
     }
 }
