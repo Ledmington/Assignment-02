@@ -1,10 +1,14 @@
 package parser.view;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+
 import java.awt.BorderLayout;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,16 +56,14 @@ public class ProjectExplorer extends JPanel {
             final String fullInterfaceName = (String) handler.body();
             addAllNodes(fullInterfaceName);
         });
-        /*
-        for (ProjectElement element : ProjectElement.values()) {
-            bus.consumer(element.getName(), handler -> {
-                final String nodeName = (String) handler.body();
-                System.out.println("Found " + element.getName() + ": " + nodeName);
-                final DefaultMutableTreeNode node = new DefaultMutableTreeNode(nodeName);
-                nodes.put(nodeName, node);
-                SwingUtilities.invokeLater(() -> rootNode.add(node));
-            });
-        }*/
+
+        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
+        Icon closedIcon = new ImageIcon("src/main/res/img/package.png");
+        Icon openIcon = new ImageIcon("src/main/res/img/package.png");
+        Icon leafIcon = new ImageIcon("src/main/res/img/package.png");
+        renderer.setClosedIcon(closedIcon);
+        renderer.setOpenIcon(openIcon);
+        renderer.setLeafIcon(leafIcon);    
     }
 
     private void addAllNodes(final String fullName) {
