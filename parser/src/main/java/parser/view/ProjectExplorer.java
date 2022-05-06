@@ -35,24 +35,12 @@ public class ProjectExplorer extends JPanel {
             final String[] packagePath = fullPackageName.split("\\.");
             if (packagePath.length == 1) {
                 // direct son of root
-                if (!nodes.containsKey(fullPackageName)) {
-                    parents.put(fullPackageName, "root");
-                    final DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode(fullPackageName);
-                    nodes.put(fullPackageName, packageNode);
-                    SwingUtilities.invokeLater(() -> nodes.get("root").add(packageNode));
-                }
+                addNode(fullPackageName, "root");
             } else {
                 // indirect son of root
                 // adding all parents before the son
                 for (int i=0; i<packagePath.length-1; i++) {
-                    final String packageName = packagePath[i+1];
-                    if (!nodes.containsKey(packageName)) {
-                        final String parentPackage = packagePath[i];
-                        parents.put(packageName, parentPackage);
-                        final DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode(packageName);
-                        nodes.put(packageName, packageNode);
-                        SwingUtilities.invokeLater(() -> nodes.get(parentPackage).add(packageNode));
-                    }
+                    addNode(packagePath[i+1], packagePath[i]);
                 }
             }
         });
@@ -66,5 +54,15 @@ public class ProjectExplorer extends JPanel {
                 SwingUtilities.invokeLater(() -> rootNode.add(node));
             });
         }*/
+    }
+
+    private void addNode(final String packageName, final String parentPackageName) {
+        if (!nodes.containsKey(packageName)) {
+            final String parentPackage = parentPackageName;
+            parents.put(packageName, parentPackage);
+            final DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode(packageName);
+            nodes.put(packageName, packageNode);
+            SwingUtilities.invokeLater(() -> nodes.get(parentPackage).add(packageNode));
+        }
     }
 }
