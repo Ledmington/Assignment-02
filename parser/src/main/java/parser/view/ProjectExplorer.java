@@ -39,26 +39,18 @@ public class ProjectExplorer extends JPanel {
             } else {
                 // indirect son of root
                 // adding all parents before the son
-                for (int i = 0; i < packagePath.length - 1; i++) {
-                    addNode(packagePath[i+1], packagePath[i]);
-                }
+                addAllNodes(fullPackageName);
             }
         });
 
         bus.consumer(ProjectElement.CLASS.getName(), handler -> {
             final String fullClassName = (String) handler.body();
-            final String[] classPath = fullClassName.split("\\.");
-            for (int i = 0; i < classPath.length - 1; i++) {
-                addNode(classPath[i+1], classPath[i]);
-            }
+            addAllNodes(fullClassName);
         });
 
         bus.consumer(ProjectElement.INTERFACE.getName(), handler -> {
             final String fullInterfaceName = (String) handler.body();
-            final String[] InterfacePath = fullInterfaceName.split("\\.");
-            for (int i = 0; i < InterfacePath.length - 1; i++) {
-                addNode(InterfacePath[i+1], InterfacePath[i]);
-            }
+            addAllNodes(fullInterfaceName);
         });
         /*
         for (ProjectElement element : ProjectElement.values()) {
@@ -70,6 +62,13 @@ public class ProjectExplorer extends JPanel {
                 SwingUtilities.invokeLater(() -> rootNode.add(node));
             });
         }*/
+    }
+
+    private void addAllNodes(final String fullName) {
+        final String[] path = fullName.split("\\.");
+        for (int i = 0; i < path.length - 1; i++) {
+            addNode(path[i+1], path[i]);
+        }
     }
 
     private void addNode(final String packageName, final String parentPackageName) {
