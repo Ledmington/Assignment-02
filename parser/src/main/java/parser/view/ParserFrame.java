@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import parser.ProjectAnalyzer;
 
@@ -16,6 +18,10 @@ public class ParserFrame extends JFrame {
 		super("Project parser");
 
 		this.setLayout(new BorderLayout());
+
+		final JPanel topBar = new JPanel();
+		topBar.setLayout(new FlowLayout());
+		this.add(topBar, BorderLayout.NORTH);
 
 		JButton chooseFolder = new JButton("Choose Folder to analyze");
 		chooseFolder.addActionListener(e -> {
@@ -33,7 +39,13 @@ public class ParserFrame extends JFrame {
 				} catch (FileNotFoundException ignored) {}
 			}
 		});
-		this.add(chooseFolder, BorderLayout.NORTH);
+		topBar.add(chooseFolder, BorderLayout.NORTH);
+
+		final JButton stopButton = new JButton("Stop");
+		stopButton.addActionListener(e -> {
+			System.out.println("ERROR: cannot stop vertx. It is too powerful.");
+		});
+		topBar.add(stopButton);
 
 		this.add(new ProjectExplorer(pa.getEventBus()), BorderLayout.CENTER);
 
