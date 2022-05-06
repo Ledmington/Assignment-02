@@ -40,16 +40,17 @@
 
 \begin{document}
 	
-	\title{N-bodies simulation\\Assignment programmazione concorrente e distribuita}
-	\author{Filippo Barbari}
+	\title{Secondo assignment programmazione concorrente e distribuita}
+	\author{Filippo Barbari, Filippo Benvenuti}
 	\date{}%no date
 	\maketitle
 	
 	\tableofcontents
 	\newpage
 	
-	\section{Analisi}
-	\subsection{Descrizione della simulazione}
+	\section{Task programming}
+	\subsection{Analisi}
+	\subsubsection{Descrizione della simulazione}
 	Questa simulazione è una variante della nota "simulazione di $N$ corpi". La simulazione è composta da:
 	\begin{itemize}
 		\item un numero $N$ di corpi ciascuno dotato di massa ma incorporeo: i corpi non possono colpire nulla tranne i limiti della simulazione
@@ -58,7 +59,7 @@
 		\item una forza d'attrito applicata sui singoli corpi pari a $FR_i=-K_{fri}\cdot{v_i}$
 	\end{itemize}
 	
-	\subsection{Analisi dell'algoritmo}
+	\subsubsection{Analisi dell'algoritmo}
 	L'algoritmo seriale è piuttosto semplice. Il corpo di ogni iterazione della simulazione è diviso in due parti:
 	\begin{enumerate}
 		\item Il calcolo di tutte le forze repulsive (ciclo alle righe 2-4)
@@ -85,7 +86,7 @@
 		\caption{N-Bodies simulation}
 	\end{algorithm}
 	
-	\subsection{Analisi delle dipendenze tra dati}
+	\subsubsection{Analisi delle dipendenze tra dati}
 	\label{sec:dipendenze}
 	Questo algoritmo presenta due dipendenze molto importanti:
 	\begin{itemize}
@@ -93,8 +94,8 @@
 		\item il risultato dell'aggiornamento dei parametri di un qualsiasi corpo $b_i$ (accelerazione, velocità e posizione) dipende dal risultato del calcolo di tutte le forze repulsive agenti su $b_i$
 	\end{itemize}
 	
-	\section{Design}
-	\subsection{Mutua esclusione}
+	\subsection{Design}
+	\subsubsection{Mutua esclusione}
 	Come emerso dall'analisi dell'algoritmo, non è necessario l'utilizzo di alcun meccanismo di mutua esclusione per evitare letture e scritture concorrenti sui parametri dei singoli corpi. Difatti, è sufficiente \textbf{partizionare} l'array globale dei corpi in tante porzioni quanti sono i thread utilizzati, ognuno dei quali si occuperà di aggiornare solamente i corpi della propria partizione.
 	
 	\begin{algorithm}
@@ -122,7 +123,7 @@
 		\label{alg:sim-partition}
 	\end{algorithm}
 	
-	\subsection{Sincronizzazione}
+	\subsubsection{Sincronizzazione}
 	Un problema più importante consiste, invece, nella \textbf{sincronizzazione} dei thread al fine di non violare nessuna delle due dipendenze tra dati individuate. Per fare ciò utilizziamo due Barrier, ovvero dei costrutti che permettono la sincronizzazione globale dei thread, come riportato nello pseudocodice di seguito. Le Barrier utilizzate sono implementate nella classe \texttt{nbodies.utils.barrier.ReusableBarrier}.
 	
 	\begin{algorithm}
@@ -149,11 +150,11 @@
 		\label{alg:sim-barrier}
 	\end{algorithm}
 
-	\subsection{GUI}
+	\subsubsection{GUI}
 	Per evitare un eccessivo overhead della GUI, ho scelto di renderla completamente asincrona rispetto alla simulazione.
 	
-	\section{Valutazione}
-	\subsection{Correttezza}
+	\subsection{Valutazione}
+	\subsubsection{Correttezza}
 	\hfill
 	\begin{minipage}{.55\textwidth}
 		Per semplificare la modellazione dell'algoritmo e la valutazione della correttezza, lavoreremo su una versione semplificata dell'algoritmo \ref{alg:sim-barrier} qui riportata. L'istruzione CF rappresenta il calcolo di \texttt{computeTotalForces}, l'istruzione UP rappresenta un raggruppamento delle istruzioni alle righe 9-12 nell'algoritmo \ref{alg:sim-barrier}. Le istruzioni B1 e B2 rappresentano le barriere di sincronizzazione globale rispettivamente alle righe 7 e 14 dell'algoritmo \ref{alg:sim-barrier}.
@@ -388,4 +389,14 @@
 		\label{fig:sse-gui}
 	\end{minipage}
 	\hfill
+	
+	\section{Event-driven programming}
+	\subsection{Analisi}
+	\subsection{Design}
+	\subsection{Implementazione}
+	
+	\section{Reactive programming}
+	\subsection{Analisi}
+	\subsection{Design}
+	\subsection{Implementazione}
 \end{document}
