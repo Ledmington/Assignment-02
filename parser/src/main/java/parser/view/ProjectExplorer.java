@@ -39,9 +39,25 @@ public class ProjectExplorer extends JPanel {
             } else {
                 // indirect son of root
                 // adding all parents before the son
-                for (int i=0; i<packagePath.length-1; i++) {
+                for (int i = 0; i < packagePath.length - 1; i++) {
                     addNode(packagePath[i+1], packagePath[i]);
                 }
+            }
+        });
+
+        bus.consumer(ProjectElement.CLASS.getName(), handler -> {
+            final String fullClassName = (String) handler.body();
+            final String[] classPath = fullClassName.split("\\.");
+            for (int i = 0; i < classPath.length - 1; i++) {
+                addNode(classPath[i+1], classPath[i]);
+            }
+        });
+
+        bus.consumer(ProjectElement.INTERFACE.getName(), handler -> {
+            final String fullInterfaceName = (String) handler.body();
+            final String[] InterfacePath = fullInterfaceName.split("\\.");
+            for (int i = 0; i < InterfacePath.length - 1; i++) {
+                addNode(InterfacePath[i+1], InterfacePath[i]);
             }
         });
         /*
