@@ -43,7 +43,7 @@ public class ParserFrame extends JFrame {
 
 		final JButton stopButton = new JButton("Stop");
 		stopButton.addActionListener(e -> {
-			System.out.println("ERROR: cannot stop vertx. It is too powerful.");
+			pa.stopAnalyze();
 		});
 		topBar.add(stopButton);
 

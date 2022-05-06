@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
+import java.sql.SQLSyntaxErrorException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -85,7 +86,7 @@ public class TestProjectAnalyzer {
         // Wait for end.
         while (!messagesCount.isComplete()) {
             try {
-                Thread.sleep(1); // Intended busy waiting
+                Thread.sleep(1000); // Intended busy waiting
             } catch (InterruptedException ignored) {
             }
         }

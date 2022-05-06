@@ -259,8 +259,14 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
         });
     }
 
+    @Override
     public EventBus getEventBus() {
         return vertx.eventBus();
+    }
+
+    @Override
+    public Future<Void> stopAnalyze(){
+        return vertx.close();
     }
 
     public Future<Integer> testEventBus(int much) {
