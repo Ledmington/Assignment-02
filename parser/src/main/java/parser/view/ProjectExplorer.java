@@ -57,6 +57,21 @@ public class ProjectExplorer extends JPanel {
             addAllNodes(fullInterfaceName);
         });
 
+        bus.consumer(ProjectElement.FIELD.getName(), handler -> {
+            final String fullFieldName = (String) handler.body();
+            addAllNodes(fullFieldName);
+        });
+
+        bus.consumer(ProjectElement.METHOD.getName(), handler -> {
+            final String fullMethodName = (String) handler.body();
+            addAllNodes(fullMethodName);
+        });
+
+        bus.consumer(ProjectElement.METHOD_SIGNATURE.getName(), handler -> {
+            final String fullMethodSignatureName = (String) handler.body();
+            addAllNodes(fullMethodSignatureName);
+        });
+
         DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
         Icon closedIcon = new ImageIcon("src/main/res/img/package.png");
         Icon openIcon = new ImageIcon("src/main/res/img/package.png");
