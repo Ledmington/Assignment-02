@@ -212,12 +212,12 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
                     messagesCount.incrementAndGet();
                     // Publish fields.
                     for (FieldInfo fi : cr.getFieldsInfo()) {
-                        this.publish(ProjectElement.FIELD, fi.getName());
+                        this.publish(ProjectElement.FIELD, cr.getFullClassName() + "." + fi.getName());
                         messagesCount.incrementAndGet();
                     }
                     // Publish methods.
                     for (MethodInfo mi : cr.getMethodsInfo()) {
-                        this.publish(ProjectElement.METHOD, mi.getName());
+                        this.publish(ProjectElement.METHOD, cr.getFullClassName() + "." + mi.getName());
                         messagesCount.incrementAndGet();
                     }
                 }
@@ -228,7 +228,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
                     messagesCount.incrementAndGet();
                     // Publish interface methods.
                     for (MethodInfo mi : ir.getMethodsInfo()) {
-                        this.publish(ProjectElement.METHOD_SIGNATURE, mi.getName());
+                        this.publish(ProjectElement.METHOD_SIGNATURE, ir.getFullInterfaceName() + "." + mi.getName());
                         messagesCount.incrementAndGet();
                     }
                 }
