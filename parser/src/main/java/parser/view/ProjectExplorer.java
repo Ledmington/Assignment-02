@@ -55,17 +55,17 @@ public class ProjectExplorer extends JPanel {
                 bus.consumer(pe.getName(), handler -> {
                     final String fullName = (String) handler.body();
                     addAllNodes(fullName);
-                    SwingUtilities.updateComponentTreeUI(this);
+                    //SwingUtilities.updateComponentTreeUI(this);
                 });
             });
 
-        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
+        /*DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
         Icon closedIcon = new ImageIcon("src/main/res/img/box.png");
         Icon openIcon = new ImageIcon("src/main/res/img/open-box.png");
         Icon leafIcon = new ImageIcon("src/main/res/img/object.png");
         renderer.setClosedIcon(closedIcon);
         renderer.setOpenIcon(openIcon);
-        renderer.setLeafIcon(leafIcon);
+        renderer.setLeafIcon(leafIcon);*/
     }
 
     private void addAllNodes(final String fullName) {

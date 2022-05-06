@@ -37,11 +37,13 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
     private final Vertx vertx;
     private final EventBus topic;
+    private boolean stopped;
     //private final ParserVerticle pv;
 
     public ProjectAnalyzerImpl() {
         vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(Runtime.getRuntime().availableProcessors()));
         topic = vertx.eventBus();
+        stopped = false;
         //pv = new ParserVerticle(-365);
         //vertx.deployVerticle(pv);
     }
@@ -199,35 +201,44 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
             throw new FileNotFoundException(srcProjectFolderName + " does not exist");
         }
 
+
         return vertx.executeBlocking(h -> {
             count.incrementAndGet();
+            if(this.stopped) return;
             getPackageReport(srcProjectFolderName).onSuccess(pr -> {
                 // Publish package.
+                if(this.stopped) return;
                 this.publish(ProjectElement.PACKAGE, pr.getFullPackageName());
                 messagesCount.incrementAndGet();
 
                 // Publish classes.
                 for (ClassReport cr : pr.getClassReports()) {
+                    if(this.stopped) return;
                     this.publish(ProjectElement.CLASS, cr.getFullClassName());
                     messagesCount.incrementAndGet();
                     // Publish fields.
                     for (FieldInfo fi : cr.getFieldsInfo()) {
+                        if(this.stopped) return;
                         this.publish(ProjectElement.FIELD, cr.getFullClassName() + "." + fi.getName());
                         messagesCount.incrementAndGet();
                     }
                     // Publish methods.
                     for (MethodInfo mi : cr.getMethodsInfo()) {
+                        if(this.stopped) return;
                         this.publish(ProjectElement.METHOD, cr.getFullClassName() + "." + mi.getName());
                         messagesCount.incrementAndGet();
                     }
                 }
 
+                if(this.stopped) return;
                 // Publish interfaces.
                 for (InterfaceReport ir : pr.getInterfaceReports()) {
+                    if(this.stopped) return;
                     this.publish(ProjectElement.INTERFACE, ir.getFullInterfaceName());
                     messagesCount.incrementAndGet();
                     // Publish interface methods.
                     for (MethodInfo mi : ir.getMethodsInfo()) {
+                        if(this.stopped) return;
                         this.publish(ProjectElement.METHOD_SIGNATURE, ir.getFullInterfaceName() + "." + mi.getName());
                         messagesCount.incrementAndGet();
                     }
@@ -242,6 +253,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
                     .filter(File::isDirectory)
                     .forEach(f -> {
                         try {
+                            if(this.stopped) return;
                             count.incrementAndGet();
                             analyzeProject(f.getPath()).onSuccess(msgCount -> {
                                 messagesCount.addAndGet(msgCount);
@@ -266,6 +278,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
     @Override
     public Future<Void> stopAnalyze(){
+        this.stopped = true;
         return vertx.close();
     }
 
