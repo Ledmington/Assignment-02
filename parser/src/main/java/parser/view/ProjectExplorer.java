@@ -58,9 +58,9 @@ public class ProjectExplorer extends JPanel {
             });
 
         DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
-        Icon closedIcon = new ImageIcon("src/main/res/img/package.png");
-        Icon openIcon = new ImageIcon("src/main/res/img/package.png");
-        Icon leafIcon = new ImageIcon("src/main/res/img/package.png");
+        Icon closedIcon = new ImageIcon("src/main/res/img/box.png");
+        Icon openIcon = new ImageIcon("src/main/res/img/open-box.png");
+        Icon leafIcon = new ImageIcon("src/main/res/img/object.png");
         renderer.setClosedIcon(closedIcon);
         renderer.setOpenIcon(openIcon);
         renderer.setLeafIcon(leafIcon);    
