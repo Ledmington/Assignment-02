@@ -10,6 +10,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import java.awt.BorderLayout;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,30 +48,14 @@ public class ProjectExplorer extends JPanel {
             }
         });
 
-        bus.consumer(ProjectElement.CLASS.getName(), handler -> {
-            final String fullClassName = (String) handler.body();
-            addAllNodes(fullClassName);
-        });
-
-        bus.consumer(ProjectElement.INTERFACE.getName(), handler -> {
-            final String fullInterfaceName = (String) handler.body();
-            addAllNodes(fullInterfaceName);
-        });
-
-        bus.consumer(ProjectElement.FIELD.getName(), handler -> {
-            final String fullFieldName = (String) handler.body();
-            addAllNodes(fullFieldName);
-        });
-
-        bus.consumer(ProjectElement.METHOD.getName(), handler -> {
-            final String fullMethodName = (String) handler.body();
-            addAllNodes(fullMethodName);
-        });
-
-        bus.consumer(ProjectElement.METHOD_SIGNATURE.getName(), handler -> {
-            final String fullMethodSignatureName = (String) handler.body();
-            addAllNodes(fullMethodSignatureName);
-        });
+        Arrays.stream(ProjectElement.values())
+            .filter(pe -> pe != ProjectElement.PACKAGE)
+            .forEach(pe -> {
+                bus.consumer(pe.getName(), handler -> {
+                    final String fullName = (String) handler.body();
+                    addAllNodes(fullName);
+                });
+            });
 
         DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
         Icon closedIcon = new ImageIcon("src/main/res/img/package.png");
