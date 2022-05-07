@@ -393,6 +393,16 @@
 	\section{Event-driven programming}
 	\subsection{Analisi}
 	\subsection{Design}
+	Abbiamo realizzato i seguenti eventi, visibili all'interno di \texttt{parser.ProjectElement}:
+	\begin{itemize}
+		\item \texttt{packages}: quando viene trovato un package
+		\item \texttt{classes}: quando viene trovata la dichiarazione di una classe
+		\item \texttt{interfaces}: quando viene trovata la dichiarazione di un'interfaccia
+		\item \texttt{fields}: quando viene trovata la dichiarazione di un campo all'interno di una classe
+		\item \texttt{methods}: quando viene trovata la dichiarazione di un metodo all'interno di una classe
+		\item \texttt{methodSignatures}: quando viene trovata la dichiarazione di un metodo all'interno di un'interfaccia
+	\end{itemize}
+	Qualsiasi altro costrutto di Java, come Enum o classi innestate, è ignorato.
 	\subsection{Implementazione}
 	
 	\section{Reactive programming}
