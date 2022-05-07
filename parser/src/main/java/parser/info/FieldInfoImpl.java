@@ -31,9 +31,4 @@ public class FieldInfoImpl implements FieldInfo {
     public String getFieldTypeFullName() {
         return typeName;
     }
-
-    @Override
-    public ClassReport getParent() {
-        throw new Error("Not implemented");
-    }
 }

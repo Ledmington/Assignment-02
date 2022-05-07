@@ -8,6 +8,4 @@ public interface MethodInfo {
     int getSrcBeginLine();
 
     int getEndBeginLine();
-
-    ClassReport getParent();
 }

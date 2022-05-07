@@ -36,9 +36,4 @@ public class MethodInfoImpl implements MethodInfo {
     public int getEndBeginLine() {
         return range.start();
     }
-
-    @Override
-    public ClassReport getParent() {
-        throw new Error("Not implemented");
-    }
 }
