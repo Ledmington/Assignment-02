@@ -28,7 +28,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("reactive.RxMain")
+    mainClass.set("reactive.AsyncParser")
 }
 
 tasks.test {
