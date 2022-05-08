@@ -1,13 +1,10 @@
 package parser.view;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 
 import java.awt.BorderLayout;
 import java.util.Arrays;
@@ -55,17 +52,8 @@ public class ProjectExplorer extends JPanel {
                 bus.consumer(pe.getName(), handler -> {
                     final String fullName = (String) handler.body();
                     addAllNodes(fullName);
-                    //SwingUtilities.updateComponentTreeUI(this);
                 });
             });
-
-        /*DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
-        Icon closedIcon = new ImageIcon("src/main/res/img/box.png");
-        Icon openIcon = new ImageIcon("src/main/res/img/open-box.png");
-        Icon leafIcon = new ImageIcon("src/main/res/img/object.png");
-        renderer.setClosedIcon(closedIcon);
-        renderer.setOpenIcon(openIcon);
-        renderer.setLeafIcon(leafIcon);*/
     }
 
     private void addAllNodes(final String fullName) {

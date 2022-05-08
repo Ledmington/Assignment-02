@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
-import java.sql.SQLSyntaxErrorException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
