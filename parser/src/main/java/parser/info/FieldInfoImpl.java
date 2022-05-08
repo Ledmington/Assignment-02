@@ -1,7 +1,6 @@
 package parser.info;
 
 import com.github.javaparser.ast.body.FieldDeclaration;
-import parser.report.classes.ClassReport;
 
 import java.util.Objects;
 
