@@ -1,12 +1,12 @@
 package reactive;
 
-import java.io.FileNotFoundException;
-
-import io.reactivex.subjects.SingleSubject;
+import io.reactivex.rxjava3.subjects.SingleSubject;
 import reactive.report.classes.ClassReport;
 import reactive.report.interfaces.InterfaceReport;
 import reactive.report.packages.PackageReport;
 import reactive.report.project.ProjectReport;
+
+import java.io.FileNotFoundException;
 
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
