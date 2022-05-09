@@ -9,15 +9,18 @@ import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import reactive.ProjectAnalyzer;
 
 public class ParserFrame extends JFrame {
-	/*
+	
     public ParserFrame(final ProjectAnalyzer pa) {
 		super("Project parser");
 
+		this.add(new JLabel("Work in progress"));
+		/*
 		this.setLayout(new BorderLayout());
 
 		final JPanel topBar = new JPanel();
@@ -51,9 +54,9 @@ public class ParserFrame extends JFrame {
 		this.add(new ProjectExplorer(pa.getEventBus()), BorderLayout.CENTER);
 
 		this.add(new StatisticsPanel(pa.getEventBus()), BorderLayout.EAST);
-
+		*/
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
 		this.pack();
-    }*/
+    }
 }

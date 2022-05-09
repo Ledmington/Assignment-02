@@ -38,14 +38,11 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
     private final Vertx vertx;
     private final EventBus topic;
     private boolean stopped;
-    //private final ParserVerticle pv;
 
     public ProjectAnalyzerImpl() {
         vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(Runtime.getRuntime().availableProcessors()));
         topic = vertx.eventBus();
         stopped = false;
-        //pv = new ParserVerticle(-365);
-        //vertx.deployVerticle(pv);
     }
 
     private <X, T> List<T> collect(final List<X> fieldsOrMethods, final Function<X, T> mapper) {

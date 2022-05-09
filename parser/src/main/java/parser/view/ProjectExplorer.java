@@ -1,13 +1,10 @@
 package parser.view;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 
 import java.awt.BorderLayout;
 import java.util.Arrays;
@@ -46,7 +43,6 @@ public class ProjectExplorer extends JPanel {
                 // adding all parents before the son
                 addAllNodes(fullPackageName);
             }
-            updateGUI();
         });
 
         Arrays.stream(ProjectElement.values())
@@ -55,17 +51,8 @@ public class ProjectExplorer extends JPanel {
                 bus.consumer(pe.getName(), handler -> {
                     final String fullName = (String) handler.body();
                     addAllNodes(fullName);
-                    //SwingUtilities.updateComponentTreeUI(this);
                 });
             });
-
-        /*DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
-        Icon closedIcon = new ImageIcon("src/main/res/img/box.png");
-        Icon openIcon = new ImageIcon("src/main/res/img/open-box.png");
-        Icon leafIcon = new ImageIcon("src/main/res/img/object.png");
-        renderer.setClosedIcon(closedIcon);
-        renderer.setOpenIcon(openIcon);
-        renderer.setLeafIcon(leafIcon);*/
     }
 
     private void addAllNodes(final String fullName) {
@@ -75,21 +62,12 @@ public class ProjectExplorer extends JPanel {
         }
     }
 
-    private void addNode(final String packageName, final String parentPackageName) {
-        if (!nodes.containsKey(packageName)) {
-            final String parentPackage = parentPackageName;
-            parents.put(packageName, parentPackage);
-            final DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode(packageName);
-            nodes.put(packageName, packageNode);
-            SwingUtilities.invokeLater(() -> nodes.get(parentPackage).add(packageNode));
-        }
-    }
+    private void addNode(final String nodeName, final String parentNodeName) {
+        if (nodes.containsKey(nodeName)) return;
 
-    private void updateGUI() {
-        SwingUtilities.invokeLater(() -> {
-            this.invalidate();
-            this.validate();
-            this.repaint();
-        });
+        parents.put(nodeName, parentNodeName);
+        final DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode(nodeName);
+        nodes.put(nodeName, packageNode);
+        SwingUtilities.invokeLater(() -> nodes.get(parentNodeName).add(packageNode));
     }
 }
