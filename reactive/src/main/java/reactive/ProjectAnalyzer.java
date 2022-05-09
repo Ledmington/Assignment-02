@@ -1,5 +1,6 @@
 package reactive;
 
+import io.reactivex.rxjava3.flowables.ConnectableFlowable;
 import io.reactivex.rxjava3.subjects.SingleSubject;
 import reactive.report.classes.ClassReport;
 import reactive.report.interfaces.InterfaceReport;
@@ -63,6 +64,6 @@ public interface ProjectAnalyzer {
      * Keep in mind that after calling this none of the Future will never be completed.
      * @return A future completed when all computations got stopped.
      */
-    //Future<Void> stopAnalyze();
+    ConnectableFlowable<Void> stopAnalyze();
 
 }
