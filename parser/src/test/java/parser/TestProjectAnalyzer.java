@@ -68,36 +68,4 @@ public class TestProjectAnalyzer {
         }
         assertTrue(elements.contains("parser.TestProjectAnalyzer"));
     }
-
-    @Test
-    public void testEventBus() {
-        AtomicInteger count = new AtomicInteger(0);
-
-        // Register handler.
-        eb.consumer("test").handler(message -> {
-            // Count messages received.
-            count.incrementAndGet();
-        });
-
-        // Start publishing messages.
-        var messagesCount = ((ProjectAnalyzerImpl) pa).testEventBus(100);
-
-        // Wait for end.
-        while (!messagesCount.isComplete()) {
-            try {
-                Thread.sleep(1000); // Intended busy waiting
-            } catch (InterruptedException ignored) {
-            }
-        }
-
-        // Wait for all messages to be received.
-        while (count.get() < messagesCount.result()) {
-            try {
-                Thread.sleep(1); // Intended busy waiting
-            } catch (InterruptedException ignored) {
-            }
-        }
-
-        assertEquals(100, count.get());
-    }
 }

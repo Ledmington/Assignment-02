@@ -1,5 +1,6 @@
 package reactive;
 
+import io.reactivex.rxjava3.flowables.ConnectableFlowable;
 import io.reactivex.rxjava3.subjects.SingleSubject;
 import reactive.report.classes.ClassReport;
 import reactive.report.interfaces.InterfaceReport;
@@ -37,6 +38,11 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
     @Override
     public SingleSubject<Integer> analyzeProject(String srcProjectFolderName) throws FileNotFoundException {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ConnectableFlowable<Void> stopAnalyze() {
         return null;
     }
 
