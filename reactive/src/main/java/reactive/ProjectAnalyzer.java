@@ -55,11 +55,6 @@ public interface ProjectAnalyzer {
     ConnectableFlowable<Pair<ProjectElement, String>> analyzeProject(String srcProjectFolderName) throws FileNotFoundException;
 
     /**
-     * Sync function that retrieve the event bus where topics are going to be published after analyzeProject is called.
-     */
-    //EventBus getEventBus();
-
-    /**
      * Async function to stop background computations.
      * After calling this method it is guaranteed that any computation running in background will be stopped as soon as possible.
      * Keep in mind that after calling this none of the Future will never be completed.

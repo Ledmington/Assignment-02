@@ -37,9 +37,7 @@ public class ParserFrame extends JFrame {
 		topBar.add(chooseFolder, BorderLayout.NORTH);
 
 		final JButton stopButton = new JButton("Stop");
-		stopButton.addActionListener(e -> {
-			pa.stopAnalyze();
-		});
+		stopButton.addActionListener(e -> pa.stopAnalyze());
 		topBar.add(stopButton);
 
 		this.add(new ProjectExplorer(), BorderLayout.CENTER);
