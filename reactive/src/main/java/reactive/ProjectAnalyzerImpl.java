@@ -1,6 +1,7 @@
 package reactive;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
@@ -14,12 +15,16 @@ import reactive.report.classes.ClassReportImpl;
 import reactive.report.interfaces.InterfaceReport;
 import reactive.report.interfaces.InterfaceReportImpl;
 import reactive.report.packages.PackageReport;
+import reactive.report.packages.PackageReportBuilder;
+import reactive.report.packages.PackageReportImpl;
 import reactive.report.project.ProjectReport;
 import reactive.utils.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
@@ -70,10 +75,46 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
         });
     }
 
+    private String getPackageNameFromFile(final File file) {
+        try {
+            return new JavaParser()
+                    .parse(file)
+                    .getResult()
+                    .orElseThrow()
+                    .getPackageDeclaration()
+                    .orElseThrow()
+                    .getNameAsString();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public Single<PackageReport> getPackageReport(String srcPackagePath) {
-        // TODO Auto-generated method stub
-        return null;
+        return Single.fromCallable(() -> {
+            final PackageReportBuilder prb = PackageReport.builder();
+            final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(new File(srcPackagePath).listFiles())).toList();
+            prb.fullName(getPackageNameFromFile(innerFiles.get(0)));
+            prb.fullFileName(srcPackagePath);
+
+            for (File file : innerFiles) {
+                if (file.isDirectory()) continue;
+                final ClassOrInterfaceDeclaration decl = getFirstInside(file);
+
+                if (decl.isInterface()) {
+                    prb.addInterface(
+                            getInterfaceReport(file.getAbsolutePath()).blockingGet()
+                    );
+                } else if (decl.isClassOrInterfaceDeclaration()) {
+                    prb.addClass(
+                            getClassReport(file.getAbsolutePath()).blockingGet()
+                    );
+                } else {
+                    throw new Error("Unknown type");
+                }
+            }
+            return prb.build();
+        });
     }
 
     @Override
