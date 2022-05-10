@@ -4,7 +4,6 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
-import io.reactivex.rxjava3.subjects.SingleSubject;
 import reactive.info.FieldInfo;
 import reactive.info.FieldInfoImpl;
 import reactive.info.MethodInfo;
@@ -58,32 +57,32 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
     }
 
     @Override
-    public SingleSubject<ClassReport> getClassReport(String srcClassPath) {
+    public Single<ClassReport> getClassReport(String srcClassPath) {
+        return Single.fromCallable(() -> {
+
+            return null;
+        });
+    }
+
+    @Override
+    public Single<PackageReport> getPackageReport(String srcPackagePath) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public SingleSubject<PackageReport> getPackageReport(String srcPackagePath) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public SingleSubject<ProjectReport> getProjectReport(String srcProjectFolderPath) {
+    public Single<ProjectReport> getProjectReport(String srcProjectFolderPath) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public ConnectableFlowable<Pair<ProjectElement, String>> analyzeProject(String srcProjectFolderName) throws FileNotFoundException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public SingleSubject<Void> stopAnalyze() {
+    public Single<Void> stopAnalyze() {
         return null;
     }
-
 }

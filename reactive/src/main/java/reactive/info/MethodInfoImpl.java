@@ -1,5 +1,6 @@
 package reactive.info;
 
+import com.github.javaparser.ast.body.MethodDeclaration;
 import reactive.report.classes.ClassReport;
 
 import java.util.Objects;
@@ -13,6 +14,12 @@ public class MethodInfoImpl implements MethodInfo {
         Objects.requireNonNull(name);
         this.name = name;
         this.range = new Range(start, end);
+    }
+
+    public MethodInfoImpl(final MethodDeclaration methDecl) {
+        this(methDecl.getNameAsString(),
+                methDecl.getName().getBegin().orElseThrow().line,
+                methDecl.getName().getEnd().orElseThrow().line);
     }
 
     @Override
