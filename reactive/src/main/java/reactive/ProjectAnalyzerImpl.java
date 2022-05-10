@@ -75,7 +75,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
     }
 
     private String getPackageNameFromFile(final File file) {
-        System.out.println(file.getPath());
+        if(file == null) return "null"; // hehe
         try {
             return new JavaParser()
                     .parse(file)
@@ -94,7 +94,12 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
         return Single.fromCallable(() -> {
             final PackageReportBuilder prb = PackageReport.builder();
             final List<File> innerFiles = Arrays.stream(Objects.requireNonNull(new File(srcPackagePath).listFiles())).toList();
-            prb.fullName(getPackageNameFromFile(innerFiles.get(0)));
+            prb.fullName(getPackageNameFromFile(
+                    innerFiles.stream()
+                            .filter(File::isFile)
+                            .findFirst()
+                            .orElse(null)
+            ));
             prb.fullFileName(srcPackagePath);
 
             for (File file : innerFiles) {
@@ -103,11 +108,11 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
                 if (decl.isInterface()) {
                     prb.addInterface(
-                            getInterfaceReport(file.getAbsolutePath()).blockingGet()
+                            getInterfaceReport(file.getPath()).blockingGet()
                     );
                 } else if (decl.isClassOrInterfaceDeclaration()) {
                     prb.addClass(
-                            getClassReport(file.getAbsolutePath()).blockingGet()
+                            getClassReport(file.getPath()).blockingGet()
                     );
                 } else {
                     throw new Error("Unknown type");

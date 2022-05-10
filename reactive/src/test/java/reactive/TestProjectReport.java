@@ -38,10 +38,4 @@ public class TestProjectReport {
                 .getMethodsInfo()
                 .size());
     }
-
-    @Test
-    public void jakeTest(){
-        File file = new File("C:\\Users\\benve\\Desktop\\git\\Assignment-02\\reactive\\src\\main ");
-        System.out.println(file.canWrite());
-    }
 }
