@@ -3,14 +3,15 @@ package reactive.view;
 import reactive.ProjectAnalyzer;
 
 import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class ParserFrame extends JFrame {
 
     public ParserFrame(final ProjectAnalyzer pa) {
         super("Project parser");
 
-        this.add(new JLabel("Work in progress"));
-		/*
 		this.setLayout(new BorderLayout());
 
 		final JPanel topBar = new JPanel();
@@ -41,10 +42,10 @@ public class ParserFrame extends JFrame {
 		});
 		topBar.add(stopButton);
 
-		this.add(new ProjectExplorer(pa.getEventBus()), BorderLayout.CENTER);
+		this.add(new ProjectExplorer(), BorderLayout.CENTER);
 
-		this.add(new StatisticsPanel(pa.getEventBus()), BorderLayout.EAST);
-		*/
+		this.add(new StatisticsPanel(), BorderLayout.EAST);
+
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();

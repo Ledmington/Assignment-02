@@ -27,11 +27,6 @@ public class StatisticsPanel extends JPanel {
             Border margin = new EmptyBorder(5, 10, 5, 10);
             lbl.setBorder(new CompoundBorder(border, margin));
             this.add(lbl);
-            /*bus.consumer(element.getName(), handler -> {
-                Pair<JLabel, Integer> counterLabel = count.get(element.getName());
-                count.put(element.getName(), new Pair<>(counterLabel.first(), counterLabel.second()+1));
-                SwingUtilities.invokeLater(() -> updateLabels());
-            });*/
         }
     }
 
