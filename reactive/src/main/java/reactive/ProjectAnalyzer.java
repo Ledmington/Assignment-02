@@ -1,7 +1,7 @@
 package reactive;
 
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
-import io.reactivex.rxjava3.subjects.SingleSubject;
 import reactive.report.classes.ClassReport;
 import reactive.report.interfaces.InterfaceReport;
 import reactive.report.packages.PackageReport;
@@ -19,7 +19,7 @@ public interface ProjectAnalyzer {
      *
      * @param srcInterfacePath Full path of interface source file
      */
-    SingleSubject<InterfaceReport> getInterfaceReport(String srcInterfacePath);
+    Single<InterfaceReport> getInterfaceReport(String srcInterfacePath);
 
     /**
      * Async method to retrieve the report about a specific class,
@@ -27,7 +27,7 @@ public interface ProjectAnalyzer {
      *
      * @param srcClassPath Full path of class source file
      */
-    SingleSubject<ClassReport> getClassReport(String srcClassPath);
+    Single<ClassReport> getClassReport(String srcClassPath);
 
     /**
      * Async method to retrieve the report about a package,
@@ -35,7 +35,7 @@ public interface ProjectAnalyzer {
      *
      * @param srcPackagePath Full path of package folder
      */
-    SingleSubject<PackageReport> getPackageReport(String srcPackagePath);
+    Single<PackageReport> getPackageReport(String srcPackagePath);
 
     /**
      * Async method to retrieve the report about a project
@@ -43,7 +43,7 @@ public interface ProjectAnalyzer {
      *
      * @param srcProjectFolderPath Full path of project folder
      */
-    SingleSubject<ProjectReport> getProjectReport(String srcProjectFolderPath);
+    Single<ProjectReport> getProjectReport(String srcProjectFolderPath);
 
     /**
      * Async function that analyze a project given the full path of the project folder,
@@ -51,7 +51,7 @@ public interface ProjectAnalyzer {
      *
      * @param srcProjectFolderName Full path of project folder
      */
-    SingleSubject<Integer> analyzeProject(String srcProjectFolderName) throws FileNotFoundException;
+    ConnectableFlowable<Void> analyzeProject(String srcProjectFolderName) throws FileNotFoundException;
 
     /**
      * Sync function that retrieve the event bus where topics are going to be published after analyzeProject is called.
@@ -64,6 +64,6 @@ public interface ProjectAnalyzer {
      * Keep in mind that after calling this none of the Future will never be completed.
      * @return A future completed when all computations got stopped.
      */
-    ConnectableFlowable<Void> stopAnalyze();
+    Single<Void> stopAnalyze();
 
 }
