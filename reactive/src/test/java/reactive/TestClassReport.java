@@ -1,6 +1,5 @@
 package reactive;
 
-import io.reactivex.rxjava3.core.Single;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import reactive.report.classes.ClassReport;
@@ -8,7 +7,6 @@ import reactive.report.classes.ClassReport;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestClassReport {
     static ProjectAnalyzer pa;

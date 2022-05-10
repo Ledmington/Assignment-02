@@ -1,25 +1,15 @@
 package reactive.view;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import reactive.ProjectAnalyzer;
 
-public class ParserFrame extends JFrame {
-	
-    public ParserFrame(final ProjectAnalyzer pa) {
-		super("Project parser");
+import javax.swing.*;
 
-		this.add(new JLabel("Work in progress"));
+public class ParserFrame extends JFrame {
+
+    public ParserFrame(final ProjectAnalyzer pa) {
+        super("Project parser");
+
+        this.add(new JLabel("Work in progress"));
 		/*
 		this.setLayout(new BorderLayout());
 
@@ -55,8 +45,8 @@ public class ParserFrame extends JFrame {
 
 		this.add(new StatisticsPanel(pa.getEventBus()), BorderLayout.EAST);
 		*/
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setVisible(true);
-		this.pack();
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setVisible(true);
+        this.pack();
     }
 }

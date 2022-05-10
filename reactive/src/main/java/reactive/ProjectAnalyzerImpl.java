@@ -1,7 +1,6 @@
 package reactive;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
@@ -10,13 +9,11 @@ import reactive.info.FieldInfoImpl;
 import reactive.info.MethodInfo;
 import reactive.info.MethodInfoImpl;
 import reactive.report.classes.ClassReport;
-import reactive.report.classes.ClassReportBuilder;
 import reactive.report.classes.ClassReportImpl;
 import reactive.report.interfaces.InterfaceReport;
 import reactive.report.interfaces.InterfaceReportImpl;
 import reactive.report.packages.PackageReport;
 import reactive.report.packages.PackageReportBuilder;
-import reactive.report.packages.PackageReportImpl;
 import reactive.report.project.ProjectReport;
 import reactive.utils.Pair;
 

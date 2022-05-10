@@ -1,19 +1,14 @@
 package reactive.view;
 
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import reactive.ProjectElement;
+import reactive.utils.Pair;
+
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.BoxLayout;
-
-import reactive.ProjectElement;
-import reactive.utils.Pair;
 
 public class StatisticsPanel extends JPanel {
 

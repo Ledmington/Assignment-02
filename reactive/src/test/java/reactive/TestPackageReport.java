@@ -1,6 +1,5 @@
 package reactive;
 
-import io.reactivex.rxjava3.core.Single;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import reactive.report.packages.PackageReport;

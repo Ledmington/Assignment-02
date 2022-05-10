@@ -10,8 +10,8 @@ public class PackageReportBuilder {
 
     private String fullPackageName;
     private String srcFullFileName;
-    private List<ClassReport> classReports = new LinkedList<>();
-    private List<InterfaceReport> interfaceReports = new LinkedList<>();
+    private final List<ClassReport> classReports = new LinkedList<>();
+    private final List<InterfaceReport> interfaceReports = new LinkedList<>();
     private boolean built = false;
 
     public PackageReportBuilder fullName(final String name) {

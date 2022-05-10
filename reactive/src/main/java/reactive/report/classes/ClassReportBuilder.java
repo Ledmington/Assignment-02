@@ -8,10 +8,10 @@ import java.util.List;
 
 public class ClassReportBuilder {
 
-    private String className;
-    private String fileName;
     private final List<MethodInfo> methods = new LinkedList<>();
     private final List<FieldInfo> fields = new LinkedList<>();
+    private String className;
+    private String fileName;
     private boolean built = false;
 
     public ClassReportBuilder className(final String name) {

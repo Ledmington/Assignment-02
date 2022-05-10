@@ -52,7 +52,7 @@ public interface ProjectAnalyzer {
      *
      * @param srcProjectFolderName Full path of project folder
      */
-    ConnectableFlowable<Pair<ProjectElement, String> > analyzeProject(String srcProjectFolderName) throws FileNotFoundException;
+    ConnectableFlowable<Pair<ProjectElement, String>> analyzeProject(String srcProjectFolderName) throws FileNotFoundException;
 
     /**
      * Sync function that retrieve the event bus where topics are going to be published after analyzeProject is called.
@@ -63,6 +63,7 @@ public interface ProjectAnalyzer {
      * Async function to stop background computations.
      * After calling this method it is guaranteed that any computation running in background will be stopped as soon as possible.
      * Keep in mind that after calling this none of the Future will never be completed.
+     *
      * @return A future completed when all computations got stopped.
      */
     Single<Void> stopAnalyze();

@@ -1,17 +1,13 @@
 package reactive.view;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ProjectExplorer extends JPanel {
-    
+
     private final JTree tree;
     private final DefaultMutableTreeNode rootNode;
     private final Map<String, DefaultMutableTreeNode> nodes = new HashMap<>();
@@ -64,7 +60,7 @@ public class ProjectExplorer extends JPanel {
     private void addAllNodes(final String fullName) {
         final String[] path = fullName.split("\\.");
         for (int i = 0; i < path.length - 1; i++) {
-            addNode(path[i+1], path[i]);
+            addNode(path[i + 1], path[i]);
         }
     }
 
