@@ -75,6 +75,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
     }
 
     private String getPackageNameFromFile(final File file) {
+        System.out.println(file.getPath());
         try {
             return new JavaParser()
                     .parse(file)
