@@ -15,13 +15,15 @@ import reactive.report.interfaces.InterfaceReportImpl;
 import reactive.report.packages.PackageReport;
 import reactive.report.packages.PackageReportBuilder;
 import reactive.report.project.ProjectReport;
+import reactive.report.project.ProjectReportImpl;
 import reactive.utils.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
@@ -116,8 +118,36 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
     @Override
     public Single<ProjectReport> getProjectReport(String srcProjectFolderPath) {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, ClassReport> crm = new ConcurrentHashMap<>();
+        return Single.fromCallable(() -> {
+            AtomicReference<ClassReport> mainClass = new AtomicReference<>();
+            List<Single<ProjectReport>> projRepToWait = new ArrayList<>();
+            // Start async computations.
+            var packRep = getPackageReport(srcProjectFolderPath);
+            Arrays.stream(Objects.requireNonNull(new File(srcProjectFolderPath).listFiles()))
+                    .filter(File::isDirectory)
+                    .map(f -> getProjectReport(f.getPath()))
+                    .peek(projRepToWait::add)
+                    .close();
+
+            // Wait for computations and return aggregated results.
+            mainClass.set(
+                    packRep.blockingGet().getClassReports().stream()
+                            .peek(cr -> crm.put(cr.getFullClassName(), cr))
+                            .filter(cr -> cr.getMethodsInfo().stream().anyMatch(mi -> mi.getName().equals("main")))
+                            .findFirst()
+                            .orElse(new ClassReportImpl("null", "", null, null))
+            );
+            projRepToWait.stream()
+                    .map(Single::blockingGet)
+                    .forEach(pr -> {
+                        if (pr.getMainClass() != null) {
+                            mainClass.set(pr.getMainClass());
+                        }
+                        pr.getAllClasses().forEach(cr -> crm.put(cr.getFullClassName(), cr));
+                    });
+            return new ProjectReportImpl(mainClass.get().getFullClassName(), crm);
+        });
     }
 
     @Override
