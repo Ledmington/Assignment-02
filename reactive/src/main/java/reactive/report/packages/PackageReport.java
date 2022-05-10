@@ -7,6 +7,10 @@ import java.util.List;
 
 public interface PackageReport {
 
+    static PackageReportBuilder builder() {
+        return new PackageReportBuilder();
+    }
+
     String getFullPackageName();
 
     String getSrcFullFileName();
