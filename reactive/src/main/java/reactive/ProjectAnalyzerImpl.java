@@ -9,6 +9,7 @@ import reactive.info.FieldInfoImpl;
 import reactive.info.MethodInfo;
 import reactive.info.MethodInfoImpl;
 import reactive.report.classes.ClassReport;
+import reactive.report.classes.ClassReportImpl;
 import reactive.report.interfaces.InterfaceReport;
 import reactive.report.packages.PackageReport;
 import reactive.report.project.ProjectReport;
@@ -53,8 +54,11 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
     @Override
     public Single<ClassReport> getClassReport(String srcClassPath) {
         return Single.fromCallable(() -> {
-
-            return null;
+            final ClassOrInterfaceDeclaration decl = getFirstInside(srcClassPath);
+            return ClassReport.builder()
+                    .className(decl.getNameAsString())
+                    .fileName(srcClassPath)
+                    .build();
         });
     }
 
