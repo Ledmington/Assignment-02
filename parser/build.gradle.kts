@@ -29,7 +29,6 @@ dependencies {
     implementation("io.vertx:vertx-core:" + vertx_version)
     implementation("io.vertx:vertx-web:" + vertx_version)
     implementation("io.vertx:vertx-web-client:" + vertx_version)
-
     implementation("com.github.javaparser:javaparser-symbol-solver-core:3.24.2")
 }
 

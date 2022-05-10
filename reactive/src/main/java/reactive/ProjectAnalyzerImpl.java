@@ -11,8 +11,10 @@ import reactive.info.MethodInfoImpl;
 import reactive.report.classes.ClassReport;
 import reactive.report.classes.ClassReportImpl;
 import reactive.report.interfaces.InterfaceReport;
+import reactive.report.interfaces.InterfaceReportImpl;
 import reactive.report.packages.PackageReport;
 import reactive.report.project.ProjectReport;
+import reactive.utils.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,8 +49,12 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
     @Override
     public Single<InterfaceReport> getInterfaceReport(String srcInterfacePath) {
-        // TODO Auto-generated method stub
-        return null;
+        return Single.fromCallable(() -> {
+            ClassOrInterfaceDeclaration interDecl = getFirstInside(srcInterfacePath);
+            String fullInterfaceName = interDecl.getFullyQualifiedName().orElseThrow();
+            List<MethodInfo> methodsInfo = collectMethods(interDecl);
+            return new InterfaceReportImpl(fullInterfaceName, srcInterfacePath, methodsInfo);
+        });
     }
 
     @Override
@@ -75,8 +81,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
     }
 
     @Override
-    public ConnectableFlowable<Void> analyzeProject(String srcProjectFolderName) throws FileNotFoundException {
-        // TODO Auto-generated method stub
+    public ConnectableFlowable<Pair<ProjectElement, String>> analyzeProject(String srcProjectFolderName) throws FileNotFoundException {
         return null;
     }
 

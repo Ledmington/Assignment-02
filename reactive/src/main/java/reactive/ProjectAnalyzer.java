@@ -6,6 +6,7 @@ import reactive.report.classes.ClassReport;
 import reactive.report.interfaces.InterfaceReport;
 import reactive.report.packages.PackageReport;
 import reactive.report.project.ProjectReport;
+import reactive.utils.Pair;
 
 import java.io.FileNotFoundException;
 
@@ -51,7 +52,7 @@ public interface ProjectAnalyzer {
      *
      * @param srcProjectFolderName Full path of project folder
      */
-    ConnectableFlowable<Void> analyzeProject(String srcProjectFolderName) throws FileNotFoundException;
+    ConnectableFlowable<Pair<ProjectElement, String> > analyzeProject(String srcProjectFolderName) throws FileNotFoundException;
 
     /**
      * Sync function that retrieve the event bus where topics are going to be published after analyzeProject is called.
@@ -65,5 +66,4 @@ public interface ProjectAnalyzer {
      * @return A future completed when all computations got stopped.
      */
     Single<Void> stopAnalyze();
-
 }
