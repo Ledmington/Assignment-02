@@ -1,11 +1,13 @@
 package reactive;
 
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
 import io.reactivex.rxjava3.subjects.SingleSubject;
 import reactive.report.classes.ClassReport;
 import reactive.report.interfaces.InterfaceReport;
 import reactive.report.packages.PackageReport;
 import reactive.report.project.ProjectReport;
+import reactive.utils.Pair;
 
 import java.io.FileNotFoundException;
 
@@ -19,7 +21,7 @@ public interface ProjectAnalyzer {
      *
      * @param srcInterfacePath Full path of interface source file
      */
-    SingleSubject<InterfaceReport> getInterfaceReport(String srcInterfacePath);
+    Single<InterfaceReport> getInterfaceReport(String srcInterfacePath);
 
     /**
      * Async method to retrieve the report about a specific class,
@@ -51,7 +53,7 @@ public interface ProjectAnalyzer {
      *
      * @param srcProjectFolderName Full path of project folder
      */
-    SingleSubject<Integer> analyzeProject(String srcProjectFolderName) throws FileNotFoundException;
+    ConnectableFlowable<Pair<ProjectElement, String> > analyzeProject(String srcProjectFolderName) throws FileNotFoundException;
 
     /**
      * Sync function that retrieve the event bus where topics are going to be published after analyzeProject is called.
@@ -64,6 +66,6 @@ public interface ProjectAnalyzer {
      * Keep in mind that after calling this none of the Future will never be completed.
      * @return A future completed when all computations got stopped.
      */
-    ConnectableFlowable<Void> stopAnalyze();
+    SingleSubject<Void> stopAnalyze();
 
 }
