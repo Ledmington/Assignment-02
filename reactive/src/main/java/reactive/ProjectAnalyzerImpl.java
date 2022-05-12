@@ -45,7 +45,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
                 .parse(file)
                 .getResult()
                 .flatMap(result -> result.findFirst(ClassOrInterfaceDeclaration.class))
-                .orElseThrow();
+                .orElse(null);
     }
 
     private ClassOrInterfaceDeclaration getFirstInside(final String filePath) throws FileNotFoundException {
@@ -106,6 +106,8 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
                 if (file.isDirectory()) continue;
                 final ClassOrInterfaceDeclaration decl = getFirstInside(file);
 
+                if(decl == null) continue;
+
                 if (decl.isInterface()) {
                     prb.addInterface(
                             getInterfaceReport(file.getPath()).blockingGet()
@@ -133,8 +135,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
             Arrays.stream(Objects.requireNonNull(new File(srcProjectFolderPath).listFiles()))
                     .filter(File::isDirectory)
                     .map(f -> getProjectReport(f.getPath()))
-                    .peek(projRepToWait::add)
-                    .close();
+                    .forEach(projRepToWait::add);
 
             // Wait for computations and return aggregated results.
             mainClass.set(

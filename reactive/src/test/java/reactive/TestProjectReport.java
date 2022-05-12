@@ -32,7 +32,7 @@ public class TestProjectReport {
     @Test
     public void testProjectReport() {
         ProjectReport pr = pa.getProjectReport(path).blockingGet();
-        assertEquals("reactive.AsyncParser", pr.getMainClass().getFullClassName());
+        assertEquals("reactive.ReactiveParser", pr.getMainClass().getFullClassName());
         assertEquals(1, pr
                 .getClassReport(pr.getMainClass().getFullClassName())
                 .getMethodsInfo()
