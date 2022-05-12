@@ -175,7 +175,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
             throw new FileNotFoundException(srcProjectFolderName + " does not exist");
         }
 
-        return (ConnectableFlowable<Pair<ProjectElement, String>>) Flowable.<Pair<ProjectElement, String>>create(e ->{
+        return (ConnectableFlowable<Pair<ProjectElement, String>>) ConnectableFlowable.<Pair<ProjectElement, String>>create(e ->{
             stopped = false;
             analyzeProjectVisit(srcProjectFolderName, e);
             e.onComplete();
