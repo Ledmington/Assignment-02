@@ -2,8 +2,15 @@ package reactive;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.BackpressureStrategy;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.FlowableEmitter;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
+import io.reactivex.rxjava3.functions.Consumer;
+import org.reactivestreams.Subscriber;
 import reactive.info.FieldInfo;
 import reactive.info.FieldInfoImpl;
 import reactive.info.MethodInfo;
@@ -22,7 +29,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
@@ -157,13 +167,70 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
         });
     }
 
+    private boolean stopped;
     @Override
     public ConnectableFlowable<Pair<ProjectElement, String>> analyzeProject(String srcProjectFolderName) throws FileNotFoundException {
-        return null;
+        Objects.requireNonNull(srcProjectFolderName);
+        if (!new File(srcProjectFolderName).exists()) {
+            throw new FileNotFoundException(srcProjectFolderName + " does not exist");
+        }
+
+        return (ConnectableFlowable<Pair<ProjectElement, String>>) Flowable.<Pair<ProjectElement, String>>create(e ->{
+            stopped = false;
+            analyzeProjectVisit(srcProjectFolderName, e);
+            e.onComplete();
+        }, BackpressureStrategy.BUFFER);
+    }
+
+    private void analyzeProjectVisit(String srcFolderName, FlowableEmitter<Pair<ProjectElement, String>> e){
+        if(this.stopped) return;
+        // Get package report async.
+        Single<PackageReport> spr = getPackageReport(srcFolderName);
+
+        // Recursively call on subfolder and wait for completion.
+        Arrays.stream(Objects.requireNonNull(new File(srcFolderName).listFiles()))
+                .filter(File::isDirectory)
+                .forEach(f -> analyzeProjectVisit(f.getPath(), e));
+
+        // Get and visit package report.
+        if(this.stopped) return;
+        PackageReport pr = spr.blockingGet();
+
+        // Publish package.
+        if(this.stopped) return;
+        e.onNext(new Pair<>(ProjectElement.PACKAGE, pr.getFullPackageName()));
+
+        // Publish classes.
+        for (ClassReport cr : pr.getClassReports()) {
+            if(this.stopped) return;
+            e.onNext(new Pair<>(ProjectElement.CLASS, cr.getFullClassName()));
+            // Publish fields.
+            for (FieldInfo fi : cr.getFieldsInfo()) {
+                if(this.stopped) return;
+                e.onNext(new Pair<>(ProjectElement.FIELD, cr.getFullClassName() + "." + fi.getName()));
+            }
+            // Publish methods.
+            for (MethodInfo mi : cr.getMethodsInfo()) {
+                if(this.stopped) return;
+                e.onNext(new Pair<>(ProjectElement.METHOD, cr.getFullClassName() + "." + mi.getName()));
+            }
+        }
+
+        if(this.stopped) return;
+        // Publish interfaces.
+        for (InterfaceReport ir : pr.getInterfaceReports()) {
+            if(this.stopped) return;
+            e.onNext(new Pair<>(ProjectElement.INTERFACE, ir.getFullInterfaceName()));
+            // Publish interface methods.
+            for (MethodInfo mi : ir.getMethodsInfo()) {
+                if(this.stopped) return;
+                e.onNext(new Pair<>(ProjectElement.METHOD_SIGNATURE, ir.getFullInterfaceName() + "." + mi.getName()));
+            }
+        }
     }
 
     @Override
-    public Single<Void> stopAnalyze() {
-        return null;
+    public void stopAnalyze() {
+        this.stopped = true;
     }
 }
