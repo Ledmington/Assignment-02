@@ -36,7 +36,7 @@ public class StatisticsPanel extends JPanel {
 
     public void setTopic(final ConnectableFlowable<Pair<ProjectElement, String>> publisher) {
         publisher.subscribe(p -> {
-            System.out.println("devi pagare le tasseh: " + p.first().getName());
+            count.get(p.first().getName());
         });
     }
 
