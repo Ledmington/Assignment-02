@@ -1,13 +1,22 @@
 package reactive.view;
 
 import reactive.ProjectAnalyzer;
+import reactive.ProjectElement;
+import reactive.utils.Pair;
 
 import javax.swing.*;
+
+import io.reactivex.rxjava3.flowables.ConnectableFlowable;
+
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ParserFrame extends JFrame {
+
+	private final ProjectExplorer explorer = new ProjectExplorer();
+	private final StatisticsPanel stats = new StatisticsPanel();
 
     public ParserFrame(final ProjectAnalyzer pa) {
         super("Project parser");
@@ -30,7 +39,9 @@ public class ParserFrame extends JFrame {
 				File file = fc.getSelectedFile();
 				System.out.println("Opening \"" + file.getAbsolutePath() + "\"");
 				try {
-					pa.analyzeProject(file.getAbsolutePath());
+					final ConnectableFlowable<Pair<ProjectElement, String>> topic = pa.analyzeProject(file.getAbsolutePath());
+					explorer.setTopic(topic);
+					stats.setTopic(topic);
 				} catch (FileNotFoundException ignored) {}
 			}
 		});
@@ -40,9 +51,9 @@ public class ParserFrame extends JFrame {
 		stopButton.addActionListener(e -> pa.stopAnalyze());
 		topBar.add(stopButton);
 
-		this.add(new ProjectExplorer(), BorderLayout.CENTER);
+		this.add(explorer, BorderLayout.CENTER);
 
-		this.add(new StatisticsPanel(), BorderLayout.EAST);
+		this.add(stats, BorderLayout.EAST);
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setVisible(true);

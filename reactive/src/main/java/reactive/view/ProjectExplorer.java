@@ -2,9 +2,15 @@ package reactive.view;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import io.reactivex.rxjava3.flowables.ConnectableFlowable;
+import reactive.ProjectElement;
+import reactive.utils.Pair;
+
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ProjectExplorer extends JPanel {
 
@@ -22,6 +28,10 @@ public class ProjectExplorer extends JPanel {
         nodes.put("root", rootNode);
         tree = new JTree(rootNode);
         this.add(new JScrollPane(tree), BorderLayout.CENTER);
+    }
+
+    public void setTopic(final ConnectableFlowable<Pair<ProjectElement, String>> publisher) {
+        System.out.println("called setTopic on ProjectExplorer");
     }
 
     private void addAllNodes(final String fullName) {

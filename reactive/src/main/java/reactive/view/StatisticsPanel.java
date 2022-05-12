@@ -7,8 +7,12 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+
+import io.reactivex.rxjava3.flowables.ConnectableFlowable;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class StatisticsPanel extends JPanel {
 
@@ -28,6 +32,12 @@ public class StatisticsPanel extends JPanel {
             lbl.setBorder(new CompoundBorder(border, margin));
             this.add(lbl);
         }
+    }
+
+    public void setTopic(final ConnectableFlowable<Pair<ProjectElement, String>> publisher) {
+        publisher.subscribe(p -> {
+            System.out.println("devi pagare le tasseh: " + p.first().getName());
+        });
     }
 
     private void updateLabels() {
