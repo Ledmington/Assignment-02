@@ -8,6 +8,7 @@ import reactive.ProjectElement;
 import reactive.utils.Pair;
 
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -31,7 +32,25 @@ public class ProjectExplorer extends JPanel {
     }
 
     public void setTopic(final ConnectableFlowable<Pair<ProjectElement, String>> publisher) {
-        System.out.println("called setTopic on ProjectExplorer");
+        // Registering handler
+        publisher.subscribe(p -> {
+            System.out.println("arrived " + p);
+            if(p.second().equals("null")) return;
+            //System.out.println("adding " + p);
+            final String fullPackageName = p.second();
+            final String[] packagePath = fullPackageName.split("\\.");
+            if (packagePath.length == 1) {
+                // direct son of root
+                addNode(fullPackageName, "root");
+            } else {
+                // indirect son of root
+                // adding all parents before the son
+                addAllNodes(fullPackageName);
+            }
+        });
+        
+        // Flushing the "events"
+        publisher.connect();
     }
 
     private void addAllNodes(final String fullName) {
@@ -42,12 +61,14 @@ public class ProjectExplorer extends JPanel {
     }
 
     private void addNode(final String packageName, final String parentPackageName) {
-        if (!nodes.containsKey(packageName)) {
-            final String parentPackage = parentPackageName;
-            parents.put(packageName, parentPackage);
-            final DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode(packageName);
-            nodes.put(packageName, packageNode);
-            SwingUtilities.invokeLater(() -> nodes.get(parentPackage).add(packageNode));
-        }
+        if(nodes.containsKey(packageName)) return;
+        System.out.println("Adding " + packageName + " under " + parentPackageName);
+        
+        parents.put(packageName, parentPackageName);
+        final DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode(packageName);
+        nodes.put(packageName, packageNode);
+        try {
+            SwingUtilities.invokeAndWait(() -> nodes.get(parentPackageName).add(packageNode));
+        } catch (Exception ignored) {}
     }
 }
