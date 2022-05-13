@@ -68,8 +68,11 @@ public class ProjectExplorer extends JPanel {
     }
 
     protected void addNode(final String packageName, final String parentPackageName) {
+        if(nodes.containsKey(packageName)) return;
+
         parents.put(packageName, parentPackageName);
-        final DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode(packageName);
+        final String[] splitPath = packageName.split("\\.");
+        final DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode(splitPath[splitPath.length-1]);
         nodes.put(packageName, packageNode);
         try {
             SwingUtilities.invokeAndWait(() -> nodes.get(parentPackageName).add(packageNode));
