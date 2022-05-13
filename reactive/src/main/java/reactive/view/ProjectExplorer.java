@@ -35,7 +35,6 @@ public class ProjectExplorer extends JPanel {
     public void setTopic(final ConnectableFlowable<Pair<ProjectElement, String>> publisher) {
         // Registering handler
         publisher.subscribe(p -> {
-            System.out.println("arrived " + p);
             if(p.second().equals("null")) return;
             //System.out.println("adding " + p);
             final String fullPackageName = p.second();
