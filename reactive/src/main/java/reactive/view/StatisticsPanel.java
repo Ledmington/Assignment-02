@@ -39,7 +39,7 @@ public class StatisticsPanel extends JPanel {
         publisher.subscribe(p -> {
             final Pair<JLabel, Integer> lblCount = count.get(p.first().getName());
             count.put(p.first().getName(), new Pair<>(lblCount.first(), lblCount.second()+1));
-            updateLabels();
+            SwingUtilities.invokeLater(() -> updateLabels());
         });
 
         // Flushing the "events"
