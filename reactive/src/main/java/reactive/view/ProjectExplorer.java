@@ -2,23 +2,24 @@ package reactive.view;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.BorderLayout;
 
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
 import reactive.ProjectElement;
 import reactive.utils.Pair;
 
-import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.List;
 
 public class ProjectExplorer extends JPanel {
 
     private final JTree tree;
     private final DefaultMutableTreeNode rootNode;
-    private final Map<String, DefaultMutableTreeNode> nodes = new HashMap<>();
-    private final Map<String, String> parents = new HashMap<>();
+    protected final Map<String, DefaultMutableTreeNode> nodes = new HashMap<>();
+    protected final Map<String, String> parents = new HashMap<>();
 
     public ProjectExplorer() {
         super();
@@ -53,17 +54,20 @@ public class ProjectExplorer extends JPanel {
         publisher.connect();
     }
 
-    private void addAllNodes(final String fullName) {
-        final String[] path = fullName.split("\\.");
-        for (int i = 0; i < path.length - 1; i++) {
-            addNode(path[i + 1], path[i]);
+    protected void addAllNodes(final String fullName) {
+        if(nodes.containsKey(fullName)) return;
+
+        final List<String> splitPath = Arrays.asList(fullName.split("\\."));
+        addNode(splitPath.get(0), "root");
+        for (int i = 1; i < splitPath.size(); i++) {
+            addNode(
+                String.join(".", splitPath.subList(0, i+1)),
+                String.join(".", splitPath.subList(0, i))
+                );
         }
     }
 
-    private void addNode(final String packageName, final String parentPackageName) {
-        if(nodes.containsKey(packageName)) return;
-        System.out.println("Adding " + packageName + " under " + parentPackageName);
-        
+    protected void addNode(final String packageName, final String parentPackageName) {
         parents.put(packageName, parentPackageName);
         final DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode(packageName);
         nodes.put(packageName, packageNode);
