@@ -178,8 +178,11 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
         return Flowable.<Pair<ProjectElement, String>>create(e -> {
             stopped = false;
-            analyzeProjectVisit(srcProjectFolderName, e);
-            e.onComplete();
+            new Thread(() -> {
+                analyzeProjectVisit(srcProjectFolderName, e);
+                e.onComplete();
+            }).start();
+
         }, BackpressureStrategy.BUFFER).publish();
     }
 
