@@ -37,7 +37,6 @@ public class ParserFrame extends JFrame {
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = fc.getSelectedFile();
-				System.out.println("Opening \"" + file.getAbsolutePath() + "\"");
 				try {
 					final ConnectableFlowable<Pair<ProjectElement, String>> topic = pa.analyzeProject(file.getAbsolutePath());
 					explorer.setTopic(topic);
