@@ -35,9 +35,15 @@ public class StatisticsPanel extends JPanel {
     }
 
     public void setTopic(final ConnectableFlowable<Pair<ProjectElement, String>> publisher) {
+        // Registering handler
         publisher.subscribe(p -> {
-            count.get(p.first().getName());
+            final Pair<JLabel, Integer> lblCount = count.get(p.first().getName());
+            count.put(p.first().getName(), new Pair<>(lblCount.first(), lblCount.second()+1));
+            updateLabels();
         });
+
+        // Flushing the "events"
+        publisher.connect();
     }
 
     private void updateLabels() {

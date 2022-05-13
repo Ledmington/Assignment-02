@@ -38,6 +38,8 @@ import java.util.function.Function;
 
 public class ProjectAnalyzerImpl implements ProjectAnalyzer {
 
+    private boolean stopped;
+
     private <X, T> List<T> collect(final List<X> fieldsOrMethods, final Function<X, T> mapper) {
         return fieldsOrMethods.stream().map(mapper).toList();
     }
@@ -167,7 +169,6 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
         });
     }
 
-    private boolean stopped;
     @Override
     public ConnectableFlowable<Pair<ProjectElement, String>> analyzeProject(String srcProjectFolderName) throws FileNotFoundException {
         Objects.requireNonNull(srcProjectFolderName);
@@ -175,7 +176,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
             throw new FileNotFoundException(srcProjectFolderName + " does not exist");
         }
 
-        return Flowable.<Pair<ProjectElement, String>>create(e ->{
+        return Flowable.<Pair<ProjectElement, String>>create(e -> {
             stopped = false;
             analyzeProjectVisit(srcProjectFolderName, e);
             e.onComplete();
