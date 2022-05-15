@@ -11,7 +11,6 @@ import io.reactivex.rxjava3.flowables.ConnectableFlowable;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ParserFrame extends JFrame {
 
@@ -19,7 +18,7 @@ public class ParserFrame extends JFrame {
 	private final StatisticsPanel stats = new StatisticsPanel();
 
     public ParserFrame(final ProjectAnalyzer pa) {
-        super("Project parser");
+        super("Reactive Parser");
 
 		this.setLayout(new BorderLayout());
 

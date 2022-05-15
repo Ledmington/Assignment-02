@@ -15,7 +15,7 @@ import parser.ProjectAnalyzer;
 
 public class ParserFrame extends JFrame {
     public ParserFrame(final ProjectAnalyzer pa) {
-		super("Project parser");
+		super("Async Parser");
 
 		this.setLayout(new BorderLayout());
 
