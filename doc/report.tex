@@ -124,7 +124,7 @@
 	\end{algorithm}
 	
 	\subsubsection{Sincronizzazione}
-	Un problema più importante consiste, invece, nella \textbf{sincronizzazione} dei thread al fine di non violare nessuna delle due dipendenze tra dati individuate. Per fare ciò utilizziamo due Barrier, ovvero dei costrutti che permettono la sincronizzazione globale dei thread, come riportato nello pseudo-codice di seguito. Le Barrier utilizzate sono implementate nella classe \texttt{nbodies.utils.barrier.ReusableBarrier}.
+	Un problema più importante consiste, invece, nella \textbf{sincronizzazione} dei thread al fine di non violare nessuna delle due dipendenze tra dati individuate. Non \'e idiomatico utilizzare una Barrier con gli \texttt{ExecutorService} di Java, per cui abbiamo implicitamente sincronizzato i vari \textit{worker} raccogliendo le \texttt{Future} di ogni task e aspettando il loro completamento prima di procedere.
 	
 	\begin{algorithm}
 		\SetAlgorithmName{Algoritmo}{}{}
@@ -334,9 +334,7 @@
 	\end{tabular}
 
 	\subsubsection{Speedup e Strong scaling efficiency}
-	I valori di speedup ed efficienza riportati di seguito sono stati misurati con 1000 corpi e 10000 step. In tutti i grafici, è molto evidente lo scalino dovuto all'HyperThreading dei processori Intel utilizzati per le misurazioni. Questi processori, infatti, possiedono 4 core fisici che la tecnologia dell'HyperThreading virtualizza in 8 core logici. Dunque, nel passaggio da 4 a 5 thread si riscontra un significativo peggioramento delle prestazioni dovuto all'overhead per i continui \textit{context switch} del thread "in eccesso".
-	
-	Altro fenomeno degno di nota è lo speedup superlineare misurato nella versione con GUI. Ritengo che ciò sia dovuto ad un elevato overhead per sincronizzazione e mutua esclusione nella versione seriale che la rende molto più lenta rispetto alle versioni parallele.
+	I valori di speedup ed efficienza riportati di seguito sono stati misurati con 1000 corpi e 10000 step. Come si pu\'o notare, la simulazione raggiunge l'apice delle prestazioni con solo 5 thread, ci\'o \'e dovuto all'esigente overhead dell'\texttt{ExecutorService}.
 	
 	\hfill
 	\begin{minipage}{.45\textwidth}
