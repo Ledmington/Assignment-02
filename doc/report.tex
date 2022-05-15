@@ -63,7 +63,7 @@
 	L'algoritmo seriale è piuttosto semplice. Il corpo di ogni iterazione della simulazione è diviso in due parti:
 	\begin{enumerate}
 		\item Il calcolo di tutte le forze repulsive (ciclo alle righe 2-4)
-		\item L'aggiornamento dei parametri di ogni copro, in base alle forze calcolate nel primo loop (ciclo alle righe 5-10)
+		\item L'aggiornamento dei parametri di ogni corpo, in base alle forze calcolate nel primo loop (ciclo alle righe 5-10)
 	\end{enumerate}
 	Il costo computazionale è $O(b^2\cdot k)$, in cui $b$ rappresenta il numero di corpi e $k$ il numero di iterazioni da compiere.
 	\begin{algorithm}
@@ -124,7 +124,7 @@
 	\end{algorithm}
 	
 	\subsubsection{Sincronizzazione}
-	Un problema più importante consiste, invece, nella \textbf{sincronizzazione} dei thread al fine di non violare nessuna delle due dipendenze tra dati individuate. Per fare ciò utilizziamo due Barrier, ovvero dei costrutti che permettono la sincronizzazione globale dei thread, come riportato nello pseudocodice di seguito. Le Barrier utilizzate sono implementate nella classe \texttt{nbodies.utils.barrier.ReusableBarrier}.
+	Un problema più importante consiste, invece, nella \textbf{sincronizzazione} dei thread al fine di non violare nessuna delle due dipendenze tra dati individuate. Per fare ciò utilizziamo due Barrier, ovvero dei costrutti che permettono la sincronizzazione globale dei thread, come riportato nello pseudo-codice di seguito. Le Barrier utilizzate sono implementate nella classe \texttt{nbodies.utils.barrier.ReusableBarrier}.
 	
 	\begin{algorithm}
 		\SetAlgorithmName{Algoritmo}{}{}
@@ -155,7 +155,6 @@
 	
 	\subsection{Valutazione}
 	\subsubsection{Correttezza}
-	\hfill
 	\begin{minipage}{.55\textwidth}
 		Per semplificare la modellazione dell'algoritmo e la valutazione della correttezza, lavoreremo su una versione semplificata dell'algoritmo \ref{alg:sim-barrier} qui riportata. L'istruzione CF rappresenta il calcolo di \texttt{computeTotalForces}, l'istruzione UP rappresenta un raggruppamento delle istruzioni alle righe 9-12 nell'algoritmo \ref{alg:sim-barrier}. Le istruzioni B1 e B2 rappresentano le barriere di sincronizzazione globale rispettivamente alle righe 7 e 14 dell'algoritmo \ref{alg:sim-barrier}.
 	\end{minipage}
@@ -318,44 +317,21 @@
 	\subsection{Prestazioni}
 	\subsubsection{Tempi di esecuzione}
 	I tempi riportati di seguito fanno riferimento ad un'esecuzione parallela che utilizza 16 thread.
+	\newline
 	
-	\hfill
-	\begin{minipage}{.4\textwidth}
-		Senza GUI
-		
-		\begin{tabular}{|l|l|l|}
-			\hline
-			\multicolumn{1}{|c|}{\textbf{N. corpi}} & \multicolumn{1}{c|}{\textbf{N. step}} & \multicolumn{1}{c|}{\textbf{Tempo}} \\ \hline
-			100 & 1000 & 0,229 \\ \hline
-			100 & 10000 & 1,205 \\ \hline
-			100 & 50000 & 5,572 \\ \hline
-			1000 & 1000 & 1,331 \\ \hline
-			1000 & 10000 & 14,95 \\ \hline
-			1000 & 50000 & 82,573 \\ \hline
-			5000 & 1000 & 33,799 \\ \hline
-			5000 & 10000 & 340,124 \\ \hline
-			5000 & 50000 & 1704,346 \\ \hline
-		\end{tabular}
-	\end{minipage}
-	\hfill
-	\begin{minipage}{.4\textwidth}
-		Con GUI
-		
-		\begin{tabular}{|l|l|l|}
-			\hline
-			\multicolumn{1}{|c|}{\textbf{N. corpi}} & \multicolumn{1}{c|}{\textbf{N. step}} & \multicolumn{1}{c|}{\textbf{Tempo}} \\ \hline
-			100 & 1000 & 0,117 \\ \hline
-			100 & 10000 & 0,74 \\ \hline
-			100 & 50000 & 3,364 \\ \hline
-			1000 & 1000 & 3,101 \\ \hline
-			1000 & 10000 & 30,25 \\ \hline
-			1000 & 50000 & 143,894 \\ \hline
-			5000 & 1000 & 68,841 \\ \hline
-			5000 & 10000 & 673,219 \\ \hline
-			5000 & 50000 & 3328,55 \\ \hline
-		\end{tabular}
-	\end{minipage}
-	\hfill
+	\begin{tabular}{|l|l|l|}
+		\hline
+		\multicolumn{1}{|c|}{\textbf{N. corpi}} & \multicolumn{1}{c|}{\textbf{N. step}} & \multicolumn{1}{c|}{\textbf{Tempo}} \\ \hline
+		100 & 1000 & 0,229 \\ \hline
+		100 & 10000 & 1,205 \\ \hline
+		100 & 50000 & 5,572 \\ \hline
+		1000 & 1000 & 1,331 \\ \hline
+		1000 & 10000 & 14,95 \\ \hline
+		1000 & 50000 & 82,573 \\ \hline
+		5000 & 1000 & 33,799 \\ \hline
+		5000 & 10000 & 340,124 \\ \hline
+		5000 & 50000 & 1704,346 \\ \hline
+	\end{tabular}
 
 	\subsubsection{Speedup e Strong scaling efficiency}
 	I valori di speedup ed efficienza riportati di seguito sono stati misurati con 1000 corpi e 10000 step. In tutti i grafici, è molto evidente lo scalino dovuto all'HyperThreading dei processori Intel utilizzati per le misurazioni. Questi processori, infatti, possiedono 4 core fisici che la tecnologia dell'HyperThreading virtualizza in 8 core logici. Dunque, nel passaggio da 4 a 5 thread si riscontra un significativo peggioramento delle prestazioni dovuto all'overhead per i continui \textit{context switch} del thread "in eccesso".
@@ -371,22 +347,8 @@
 	\hfill
 	\begin{minipage}{.45\textwidth}
 		\centering
-		\includegraphics[width=\linewidth]{speedup-gui}
-		\label{fig:speedup-gui}
-	\end{minipage}
-	\hfill
-	
-	\hfill
-	\begin{minipage}{.45\textwidth}
-		\centering
 		\includegraphics[width=\linewidth]{sse-no-gui}
 		\label{fig:sse-no-gui}
-	\end{minipage}
-	\hfill
-	\begin{minipage}{.45\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{sse-gui}
-		\label{fig:sse-gui}
 	\end{minipage}
 	\hfill
 	
@@ -404,6 +366,7 @@
 	\end{itemize}
 	Qualsiasi altro costrutto di Java, come Enum o classi innestate, è ignorato.
 	\subsection{Implementazione}
+	
 	
 	\section{Reactive programming}
 	\subsection{Analisi}

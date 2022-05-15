@@ -37,13 +37,13 @@ public class VisualiserFrame extends JFrame {
         startButton.setBounds(380, 10, 100, 20);
         stopButton.setBounds(500, 10, 100, 20);
 
-        startButton.addActionListener((but) -> {
+        startButton.addActionListener(but -> {
             startButton.setEnabled(false);
             stopButton.setEnabled(true);
             SimulationData.setPaused(false);
             NBodies.getSimulator().getData().getPause().hitAndWaitAll();
         });
-        stopButton.addActionListener((but) -> {
+        stopButton.addActionListener(but -> {
             startButton.setEnabled(true);
             stopButton.setEnabled(false);
             SimulationData.setPaused(true);
