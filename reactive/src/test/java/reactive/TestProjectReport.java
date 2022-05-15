@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import reactive.report.project.ProjectReport;
 import reactive.report.project.ProjectReportImpl;
 
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.Map;
 

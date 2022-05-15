@@ -12,7 +12,6 @@ import io.reactivex.rxjava3.flowables.ConnectableFlowable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class StatisticsPanel extends JPanel {
 

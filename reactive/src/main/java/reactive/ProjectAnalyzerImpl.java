@@ -2,15 +2,11 @@ package reactive;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.FlowableEmitter;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
-import io.reactivex.rxjava3.functions.Consumer;
-import org.reactivestreams.Subscriber;
 import reactive.info.FieldInfo;
 import reactive.info.FieldInfoImpl;
 import reactive.info.MethodInfo;
@@ -29,10 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
@@ -87,7 +80,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
     }
 
     private String getPackageNameFromFile(final File file) {
-        if(file == null) return "null"; // hehe
+        if(file == null) return "null";
         try {
             return new JavaParser()
                     .parse(file)
