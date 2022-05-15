@@ -8,6 +8,7 @@
 \usepackage{wrapfig}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{hyperref}
 
 \usepackage[
 	linesnumbered,
@@ -176,69 +177,6 @@
 	\subsubsection{Java Path Finder}
 	Un'analisi, mediante JPF, sul codice realizzato ha rilevato alcune race condition all'interno della classe \texttt{nbodies.sim.data.SimulationData}. In particolare, tali race condition riguardavano il numero dell'iterazione corrente e il tempo di esecuzione misurato, entrambe risolte mediante l'estrazione dei monitor \texttt{Timer} e \texttt{Iteration} all'interno dello stesso package. Infine, JPF non ha rilevato situazioni di \textit{deadlock}.
 	
-	\iffalse
-	\subsubsection{Diagramma degli stati}
-	\begin{tikzpicture}[node distance=1cm, >=stealth, auto, every place/.style={draw}]
-		% nodes
-		\node [place] (CFCF) {CF,CF};
-		\coordinate[left of=CFCF] (left-CFCF);
-		\coordinate[right of=CFCF] (right-CFCF);
-		\node [place] (B1CF) [below =of left-CFCF] {B1,CF};
-		\coordinate[left of=B1CF] (left-B1CF);
-		\coordinate[right of=B1CF] (right-B1CF);
-		\node [place] (CFB1) [below =of right-CFCF] {CF,B1};
-		\coordinate[left of=CFB1] (left-CFB1);
-		\coordinate[right of=CFB1] (right-CFB1);
-		\node [place] (B1B1) [below =of left-CFB1] {B1,B1};
-		\coordinate[left of=B1B1] (left-B1B1);
-		\coordinate[right of=B1B1] (right-B1B1);
-		
-		\node [place] (UPB1) [below =of left-B1B1] {UP,B1};
-		\coordinate[left of=UPB1] (left-UPB1);
-		\coordinate[right of=UPB1] (right-UPB1);
-		\node [place] (B1UP) [below =of right-B1B1] {B1,UP};
-		\coordinate[left of=B1UP] (left-B1UP);
-		\coordinate[right of=B1UP] (right-B1UP);
-		\node [place] (B2B1) [below =of left-UPB1] {B2,B1};
-		\coordinate[left of=B2B1] (left-B2B1);
-		\coordinate[right of=B2B1] (right-B2B1);
-		\node [place] (B1B2) [below =of right-B1UP] {B1,B2};
-		\coordinate[left of=B1B2] (left-B1B2);
-		\coordinate[right of=B1B2] (right-B1B2);
-		\node [place] (UPUP) [below =of left-B1UP] {UP,UP};
-		\coordinate[left of=UPUP] (left-UPUP);
-		\coordinate[right of=UPUP] (right-UPUP);
-		\node [place] (B2UP) [below =of left-UPUP] {B2,UP};
-		\coordinate[left of=B2UP] (left-B2UP);
-		\coordinate[right of=B2UP] (right-B2UP);
-		\node [place] (UPB2) [below =of left-B1B2] {UP,B2};
-		\coordinate[left of=UPB2] (left-UPB2);
-		\coordinate[right of=UPB2] (right-UPB2);
-		\node [place] (B2B2) [below =of left-UPB2] {B2,B2};
-		\coordinate[left of=B2B2] (left-B2B2);
-		\coordinate[right of=B2B2] (right-B2B2);
-		
-		% arcs
-		\path[->] (CFCF) edge node {} (B1CF);
-		\path[->] (CFCF) edge node {} (CFB1);
-		\path[->] (B1CF) edge node {} (B1B1);
-		\path[->] (CFB1) edge node {} (B1B1);
-		
-		\path[->] (B1B1) edge node {} (UPB1);
-		\path[->] (B1B1) edge node {} (B1UP);
-		\path[->] (UPB1) edge node {} (UPUP);
-		\path[->] (UPB1) edge node {} (B2B1);
-		\path[->] (B1UP) edge node {} (B1B2);
-		\path[->] (B1UP) edge node {} (UPUP);
-		\path[->] (B2B1) edge node {} (B2UP);
-		\path[->] (UPUP) edge node {} (B2UP);
-		\path[->] (UPUP) edge node {} (UPB2);
-		\path[->] (B1B2) edge node {} (UPB2);
-		\path[->] (B2UP) edge node {} (B2B2);
-		\path[->] (UPB2) edge node {} (B2B2);
-	\end{tikzpicture}
-	\fi
-	
 	\subsubsection{Rete di Petri}
 	Riporto qui sotto la rete di Petri corrispondente
 	Come possiamo notare dal marking graph, la rete di Petri è \textit{bounded}. Le proprietà LTL che si possono esprimere su di esso corrispondono alle due dipendenze tra dati evidenziate nella sezione \ref{sec:dipendenze}. Formalmente:
@@ -352,6 +290,8 @@
 	
 	\section{Event-driven programming}
 	\subsection{Analisi}
+	Scopo di questa parte dell'assignment \'e l'implementazione di una libreria asincrona in grado di "parsare" file sorgente di java mediante l'utilizzo dell'event loop fornito da \href{https://vertx.io/}{Vert.x}. Abbiamo utilizzato la libreria \href{https://javaparser.org/}{Java Parser} per la fase di parsing dei file.
+	
 	\subsection{Design}
 	Abbiamo realizzato i seguenti eventi, visibili all'interno di \texttt{parser.ProjectElement}:
 	\begin{itemize}
@@ -363,8 +303,9 @@
 		\item \texttt{methodSignatures}: quando viene trovata la dichiarazione di un metodo all'interno di un'interfaccia
 	\end{itemize}
 	Qualsiasi altro costrutto di Java, come Enum o classi innestate, è ignorato.
-	\subsection{Implementazione}
 	
+	\subsection{Dettagli implementativi}
+	Per fermare la computazione in qualunque momento, abbiamo scelto di rilasciare forzatamente le risorse utilizzate da \texttt{vert.x} mediante il metodo \texttt{close()}.
 	
 	\section{Reactive programming}
 	\subsection{Analisi}
