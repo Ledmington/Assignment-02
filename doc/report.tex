@@ -290,19 +290,19 @@
 	
 	\section{Event-driven programming}
 	\subsection{Analisi}
-	Scopo di questa parte dell'assignment \'e l'implementazione di una libreria asincrona in grado di "parsare" file sorgente di java mediante l'utilizzo dell'event loop fornito da \href{https://vertx.io/}{Vert.x}. Abbiamo utilizzato la libreria \href{https://javaparser.org/}{Java Parser} per la fase di parsing dei file.
+	Scopo di questa parte dell'assignment \'e l'implementazione di una libreria asincrona in grado di effettuare il \emph{parsing} di file sorgente Java mediante l'utilizzo dell'\emph{event loop} fornito da \href{https://vertx.io/}{Vert.x}. Abbiamo utilizzato la libreria \href{https://javaparser.org/}{Java Parser} per la fase di parsing.
 	
 	\subsection{Design}
-	Abbiamo realizzato i seguenti eventi, visibili all'interno di \texttt{parser.ProjectElement}:
+	Abbiamo realizzato i seguenti eventi, visibili all'interno di \texttt{parser.ProjectElement}, che rappresentano il momento in cui:
 	\begin{itemize}
-		\item \texttt{packages}: quando viene trovato un package
-		\item \texttt{classes}: quando viene trovata la dichiarazione di una classe
-		\item \texttt{interfaces}: quando viene trovata la dichiarazione di un'interfaccia
-		\item \texttt{fields}: quando viene trovata la dichiarazione di un campo all'interno di una classe
-		\item \texttt{methods}: quando viene trovata la dichiarazione di un metodo all'interno di una classe
-		\item \texttt{methodSignatures}: quando viene trovata la dichiarazione di un metodo all'interno di un'interfaccia
+		\item \texttt{packages}: viene trovato un package
+		\item \texttt{classes}: viene trovata la dichiarazione di una classe
+		\item \texttt{interfaces}: viene trovata la dichiarazione di un'interfaccia
+		\item \texttt{fields}: viene trovata la dichiarazione di un campo all'interno di una classe
+		\item \texttt{methods}: viene trovata la dichiarazione di un metodo all'interno di una classe
+		\item \texttt{methodSignatures}: viene trovata la dichiarazione di un metodo all'interno di un'interfaccia
 	\end{itemize}
-	Qualsiasi altro costrutto di Java, come Enum o classi innestate, è ignorato.
+	Qualsiasi altro costrutto di Java, come Enum o classi innestate, \'e ignorato.
 	
 	\subsection{Dettagli implementativi}
 	Per fermare la computazione in qualunque momento, abbiamo scelto di rilasciare forzatamente le risorse utilizzate da \texttt{vert.x} mediante il metodo \texttt{close()}.
