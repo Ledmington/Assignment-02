@@ -3,8 +3,9 @@
 \begin{document}
 	\section{Event-driven programming}
 	\subsection{Analisi del problema}
-	Scopo di questa parte dell'assignment \'e l'implementazione di una libreria asincrona in grado di effettuare il \emph{parsing} di file sorgente Java mediante l'utilizzo dell'\emph{event loop} fornito da \href{https://vertx.io/}{Vert.x}. Abbiamo utilizzato la libreria \href{https://javaparser.org/}{Java Parser} per la fase di parsing.
-	{\Huge come gestiamo la concorrenza?}
+	Scopo di questa parte dell'assignment \'e l'implementazione di una libreria asincrona in grado di effettuare il \emph{parsing} di file sorgente Java (mediante la libreria \href{https://javaparser.org/}{Java Parser}) mediante l'utilizzo dell'\emph{event loop} fornito da \href{https://vertx.io/}{Vert.x}.
+	
+	\texttt{Vertx} fornisce la classe \texttt{Verticle} come astrazione per l'utilizzo di un event loop. Un \texttt{Verticle} rappresenta una coda di task insieme ad un singolo thread che si occupa di estrarli e di gestirli. Eventualmente, tale thread pu\'o anche utilizzare una pool di worker per gestire i task. Inoltre, al di fuori dei \texttt{Verticle}, e' presente un \texttt{EventBus} da utilizzare per gestire gli oggetti \texttt{Topic} che rappresentano i messaggi da scambiare all'interno dell'applicazione.
 	
 	\subsection{Design}
 	\subsubsection{Strategia risolutiva}
