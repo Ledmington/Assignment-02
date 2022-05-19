@@ -25,4 +25,33 @@
 	Per fermare la computazione in qualunque momento, abbiamo scelto di rilasciare forzatamente le risorse utilizzate da \texttt{vert.x} mediante il metodo \texttt{close()}.
 	
 	\subsection{Valutazione}
+	\begin{minipage}{.5\textwidth}
+		Qui riportiamo una rappresentazione del funzionamento del sistema mediante una Rete di Petri. Si considera il caso di utilizzo di 2 worker interni. Non riportiamo il \emph{marking graph} in quanto risulta essere \emph{unbounded}.
+		\begin{itemize}
+			\item AP = \texttt{analyzeProject}
+			\item PT = \texttt{publishTopic}
+			\item ST = \texttt{subscribeTopic}
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{.4\textwidth}
+		\begin{tikzpicture}[node distance=2cm, >=stealth, bend angle=50, auto]
+				
+				\tikzstyle{transition}=[rectangle,thick,draw=black!75,fill=black!20,minimum size=5mm]
+				
+				\node [place, tokens=1] (start) {};
+				\coordinate[left of=start] (left-start);
+				\coordinate[right of=start] (right-start);
+				\node [place] (worker1) [below =of left-start] {};
+				\node [place] (worker2) [below =of right-start] {};
+				\coordinate[left of=worker2] (middle-worker);
+				\node [place] (eventbus) [below =of middle-worker] {};
+				
+				\node [transition] (AP) [node distance=1cm, below =of start] {AP} edge [pre, bend left] (start) edge [post, bend right] (start) edge [post] (worker1) edge [post] (worker2);
+				\node [transition] (PT1) [node distance=1cm, below =of worker1] {PT1} edge [pre, bend left] (worker1) edge [post, bend right] (worker1) edge [post] (eventbus);
+				\node [transition] (PT2) [node distance=1cm, below =of worker2] {PT2} edge [pre, bend left] (worker2) edge [post, bend right] (worker2) edge [post] (eventbus);
+				\node [transition] (ST) [node distance=1cm, below =of eventbus] {ST} edge [pre] (eventbus);
+		\end{tikzpicture}
+	\end{minipage}
+	
 \end{document}
