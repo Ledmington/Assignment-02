@@ -29,12 +29,12 @@
 	I metodi dell'API, come gi\'a accennato, eseguono il parsing in modo asincrono su file diversi, per cui non si sono rivelati necessari meccanismi di mutua esclusione.
 	
 	\subsection{Valutazione}
-	\begin{minipage}{.5\textwidth}
-		Qui riportiamo una rappresentazione del funzionamento del sistema mediante una Rete di Petri. Si considera il caso di utilizzo di 2 worker interni. Non riportiamo il \emph{marking graph} in quanto risulta essere \emph{unbounded}.
+	\begin{minipage}{.55\textwidth}
+		Qui riportiamo una rappresentazione del funzionamento del sistema mediante una Rete di Petri. Si considera il caso di utilizzo di 2 worker interni. Non riportiamo il \emph{marking graph} in quanto risulta essere \emph{unbounded}. Di seguito la legenda 
 		\begin{itemize}
-			\item AP = \texttt{analyzeProject}
-			\item PT = \texttt{publishTopic}
-			\item ST = \texttt{subscribeTopic}
+			\item[] AP = \texttt{analyzeProject}
+			\item[] PT = \texttt{publishTopic}
+			\item[] ST = \texttt{subscribeTopic}
 		\end{itemize}
 	\end{minipage}
 	\hfill
