@@ -5,11 +5,13 @@
 	\subsection{Analisi del problema}
 	Scopo di questa parte dell'assignment \'e l'implementazione di una libreria asincrona in grado di effettuare il \emph{parsing} di file sorgente Java (mediante la libreria \href{https://javaparser.org/}{Java Parser}) mediante l'utilizzo dell'\emph{event loop} fornito da \href{https://vertx.io/}{Vert.x}.
 	
-	\texttt{Vertx} fornisce la classe \texttt{Verticle} come astrazione per l'utilizzo di un event loop. Un \texttt{Verticle} rappresenta una coda di task insieme ad un singolo thread che si occupa di estrarli e di gestirli. Eventualmente, tale thread pu\'o anche utilizzare una pool di worker per gestire i task. Inoltre, al di fuori dei \texttt{Verticle}, e' presente un \texttt{EventBus} da utilizzare per gestire gli oggetti \texttt{Topic} che rappresentano i messaggi da scambiare all'interno dell'applicazione.
+	\texttt{Vertx} fornisce la classe \texttt{Verticle} come astrazione per l'utilizzo di un event loop. Un \texttt{Verticle} rappresenta una coda di task insieme ad un singolo thread che si occupa di estrarli e di gestirli. Eventualmente, tale thread pu\'o anche utilizzare una pool di worker per gestire task bloccanti o di lunga durata. Inoltre, al di fuori dei \texttt{Verticle}, e' presente un \texttt{EventBus} da utilizzare per gestire gli oggetti \texttt{Topic} che rappresentano i messaggi da scambiare all'interno dell'applicazione secondo il paradigma \emph{publish}/\emph{subscribe}.
 	
 	\subsection{Design}
-	\subsubsection{Strategia risolutiva}
-	\subsubsection{Achitettura proposta}
+	Ogni metodo dell'API della libreria (contenuta in \texttt{parser.ProjectAnalyzer}) restituisce immediatamente una \texttt{Future} tramite la quale sarà possibile ottenere il risultato del parsing, generato da un worker in modo asincrono, sotto forma di un oggetto \texttt{Report}.
+	
+	Il metodo \texttt{analyzeProject}, come gli altri metodi, restituisce una \texttt{Future} che, in questo caso, non contiene il risultato ma il numero di elementi ottenuti, mentre le informazioni di parsing saranno reperibili tramite l'\texttt{EventBus} separate in base al topic. E' possibile attendere il termine della computazione contando gli eventi in uscita dall'\texttt{EventBus}: quando questo numero sar\'a uguale al contenuto all'interno della \texttt{Future} sopra citata.
+	
 	Abbiamo realizzato i seguenti eventi, visibili all'interno di \texttt{parser.ProjectElement}, che rappresentano il momento in cui:
 	\begin{itemize}
 		\item \texttt{packages}: viene trovato un \emph{package}
@@ -23,6 +25,8 @@
 	Qualsiasi altro costrutto di Java, come Enum o classi innestate, \'e ignorato.
 	
 	Per fermare la computazione in qualunque momento, abbiamo scelto di rilasciare forzatamente le risorse utilizzate da \texttt{vert.x} mediante il metodo \texttt{close()}.
+	
+	I metodi dell'API, come gi\'a accennato, eseguono il parsing in modo asincrono su file diversi, per cui non si sono rivelati necessari meccanismi di mutua esclusione.
 	
 	\subsection{Valutazione}
 	\begin{minipage}{.5\textwidth}
