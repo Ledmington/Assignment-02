@@ -7,6 +7,8 @@ import java.util.List;
 
 public class ClassReportImpl implements ClassReport {
 
+    public static final ClassReport emptyReport = new ClassReportImpl("null", "", null, null);
+
     private final String className;
     private final String fileName;
     private final List<MethodInfo> methods;

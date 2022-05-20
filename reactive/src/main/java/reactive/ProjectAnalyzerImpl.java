@@ -148,7 +148,7 @@ public class ProjectAnalyzerImpl implements ProjectAnalyzer {
                             .peek(cr -> crm.put(cr.getFullClassName(), cr))
                             .filter(cr -> cr.getMethodsInfo().stream().anyMatch(mi -> mi.getName().equals("main")))
                             .findFirst()
-                            .orElse(new ClassReportImpl("null", "", null, null))
+                            .orElse(ClassReportImpl.emptyReport)
             );
             projRepToWait.stream()
                     .map(Single::blockingGet)
