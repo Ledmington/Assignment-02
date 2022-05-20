@@ -29,8 +29,8 @@
 	I metodi dell'API, come gi\'a accennato, eseguono il parsing in modo asincrono su file diversi, per cui non si sono rivelati necessari meccanismi di mutua esclusione.
 	
 	\subsection{Valutazione}
-	\begin{minipage}{.55\textwidth}
-		Qui riportiamo una rappresentazione del funzionamento del sistema mediante una Rete di Petri. Si considera il caso di utilizzo di 2 worker interni. Non riportiamo il \emph{marking graph} in quanto risulta essere \emph{unbounded}. Di seguito la legenda 
+	\begin{minipage}{.6\textwidth}
+		Qui riportiamo una rappresentazione del funzionamento del sistema mediante una Rete di Petri. Si considera il caso di utilizzo di 2 worker interni. Non riportiamo il \emph{marking graph} in quanto risulta essere \emph{unbounded}. Di seguito la legenda delle transizioni con i metodi corrispondenti:
 		\begin{itemize}
 			\item[] AP = \texttt{analyzeProject}
 			\item[] PT = \texttt{publishTopic}
@@ -38,7 +38,7 @@
 		\end{itemize}
 	\end{minipage}
 	\hfill
-	\begin{minipage}{.4\textwidth}
+	\begin{minipage}{.35\textwidth}
 		\begin{tikzpicture}[node distance=2cm, >=stealth, bend angle=50, auto]
 				
 				\tikzstyle{transition}=[rectangle,thick,draw=black!75,fill=black!20,minimum size=5mm]

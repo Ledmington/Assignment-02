@@ -3,6 +3,62 @@
 \begin{document}
 	\section{Reactive programming}
 	\subsection{Analisi del problema}
+	Scopo di questa parte dell'assignment \'e l'implementazione di una libreria asincrona in grado di effettuare il \emph{parsing} di file sorgente Java (mediante la libreria \href{https://javaparser.org/}{Java Parser}) mediante l'utilizzo di \texttt{ConnectableFlowable} e \texttt{Single} forniti dalla libreria \href{https://reactivex.io/intro.html}{RxJava}.
+	
+	I \texttt{Flowable} di RxJava rappresenta sorgenti di dati a cui \'e possibile collegarsi mediante \texttt{subscribe}. In particolare, i \texttt{ConnectableFlowable} sono un tipo particolare che cominciano ad emettere dati solamente dopo l'invocazione del metodo \texttt{connect}. In questo modo pi\'u "ascoltatori" possono collegarsi (tramite \texttt{subscribe}) prima che i dati vengano trasmessi.
+	
 	\subsection{Design}
+	Ogni metodo dell'API della libreria (contenuta in \texttt{reactive.ProjectAnalyzer}) restituisce immediatamente un \texttt{Single} tramite il quale sarà possibile ottenere il risultato del parsing sotto forma di un oggetto \texttt{Report}.
+	
+	Il metodo \texttt{analyzeProject}, a differenza degli altri metodi, restituisce un \texttt{Connectable\\Flowable} che emette i dati del parsing, mano a mano che vengono trovati, sotto forma di coppie composte da:
+	\begin{itemize}
+		\item \texttt{ProjectElement}: il tipo dell'elemento trovato
+		\item \texttt{String}: il nome dell'elemento
+	\end{itemize}
+	
+	Il tipo dei dati emessi, visibile all'interno di \texttt{reactive.ProjectElement}, viene generato nel momento in cui:
+	\begin{itemize}
+		\item \texttt{packages}: viene trovato un \emph{package}
+		\item \texttt{classes}: viene trovata la dichiarazione di una classe
+		\item \texttt{interfaces}: viene trovata la dichiarazione di un'interfaccia
+		\item \texttt{fields}: viene trovata la dichiarazione di un campo all'interno di una classe
+		\item \texttt{methods}: viene trovata la dichiarazione di un metodo all'interno di una classe
+		\item \texttt{methodSignatures}: viene trovata la dichiarazione di un metodo all'interno di un'interfaccia
+	\end{itemize}
+	
+	Qualsiasi altro costrutto di Java, come Enum o classi innestate, \'e ignorato.
+	
+	Per fermare la computazione in qualunque momento, viene impostato un flag che interrompe l'emissione di ulteriori dati.
+	
+	I metodi dell'API, come gi\'a accennato, eseguono il parsing in modo asincrono su file diversi, per cui non si sono rivelati necessari meccanismi di mutua esclusione.
+	
 	\subsection{Valutazione}
+	\begin{minipage}{.6\textwidth}
+		Qui riportiamo una rappresentazione del funzionamento del sistema mediante una Rete di Petri. Si considera il caso di utilizzo di 2 worker interni. Non riportiamo il \emph{marking graph} in quanto risulta essere \emph{unbounded}. Di seguito la legenda delle transizioni con i metodi corrispondenti:
+		\begin{itemize}
+			\item[] AP = \texttt{analyzeProject}
+			\item[] PT = \texttt{publishTopic}
+			\item[] ST = \texttt{subscribeTopic}
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{.35\textwidth}
+		\begin{tikzpicture}[node distance=2cm, >=stealth, bend angle=50, auto]
+			
+			\tikzstyle{transition}=[rectangle,thick,draw=black!75,fill=black!20,minimum size=5mm]
+			
+			\node [place, tokens=1] (start) {};
+			\coordinate[left of=start] (left-start);
+			\coordinate[right of=start] (right-start);
+			\node [place] (worker1) [below =of left-start] {};
+			\node [place] (worker2) [below =of right-start] {};
+			\coordinate[left of=worker2] (middle-worker);
+			\node [place] (eventbus) [below =of middle-worker] {};
+			
+			\node [transition] (AP) [node distance=1cm, below =of start] {AP} edge [pre, bend left] (start) edge [post, bend right] (start) edge [post] (worker1) edge [post] (worker2);
+			\node [transition] (PT1) [node distance=1cm, below =of worker1] {PT1} edge [pre, bend left] (worker1) edge [post, bend right] (worker1) edge [post] (eventbus);
+			\node [transition] (PT2) [node distance=1cm, below =of worker2] {PT2} edge [pre, bend left] (worker2) edge [post, bend right] (worker2) edge [post] (eventbus);
+			\node [transition] (ST) [node distance=1cm, below =of eventbus] {ST} edge [pre] (eventbus);
+		\end{tikzpicture}
+	\end{minipage}
 \end{document}
